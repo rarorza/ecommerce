@@ -1,2 +1,2 @@
 # ecommerce
-An e-commerce developed with Django and Vue.JS
+An e-commerce developed with Django and ReactJS
