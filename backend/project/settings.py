@@ -136,6 +136,8 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# USER MODEL
+AUTH_USER_MODEL = "userauth.User"
 
 # JAZZMIN
 JAZZMIN_SETTINGS = {
