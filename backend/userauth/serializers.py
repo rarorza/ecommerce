@@ -7,10 +7,10 @@ from userauth.models import Profile, User
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
-        write_only=True, required=True, validadors=[validate_password]
+        write_only=True, required=True, validators=[validate_password]
     )
     password2 = serializers.CharField(
-        write_only=True, required=True, validadors=[validate_password]
+        write_only=True, required=True, validators=[validate_password]
     )
 
     class Meta:
@@ -46,7 +46,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["username"] = user.username
         try:
             token["vendor_id"] = user.vendor_id
-        except ValueError:
+        except:
             token["vendor_id"] = 0
         return token
 
