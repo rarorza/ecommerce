@@ -1,6 +1,6 @@
-import axios from "axios"
-import { isAccessTokenExpired, setAuthUser, getRefreshToken } from "./auth"
-import { BASE_URL } from "./constants"
+import axios from 'axios'
+import { isAccessTokenExpired, setAuthUser, getRefreshToken } from './auth'
+import { BASE_URL } from './constants'
 import Cookies from 'js-cookie'
 
 // Will intercepts every request to the server and validated the refresh token
@@ -19,7 +19,7 @@ const useAxios = async () => {
     }
     const responseToken = await getRefreshToken(refresh_token)
     setAuthUser(responseToken.access, responseToken.refresh)
-    
+
     req.headers.Authorization = `Bearer ${responseToken.data.access}`
     return req
   })
