@@ -1,11 +1,11 @@
-import { useAuthStore } from "../store/auth"
-import axios from "./axios"
+import { useAuthStore } from '../store/auth'
+import axios from './axios'
 import jwt_decode from 'jwt-decode'
-import Cookies from "js-cookie"
+import Cookies from 'js-cookie'
 
 export const login = async (email, password) => {
   try {
-    const { data, status } = await axios.post("user/token/", {
+    const { data, status } = await axios.post('user/token/', {
       email,
       password
     })
@@ -84,7 +84,7 @@ export const setAuthUser = (access_token, refresh_token) => {
 }
 
 export const getRefreshToken = async () => {
-  const refresh_token = Cookies.get("refresh_token")
+  const refresh_token = Cookies.get('refresh_token')
   const response = await axios.post('user/token/refresh/', {
     refresh: refresh_token
   })
