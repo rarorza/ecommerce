@@ -14,7 +14,7 @@ function LoginView() {
     if (isLoggedIn()) {
       navigate('/')
     }
-  })
+  }, [])
 
   const resetForm = () => {
     setEmail('')
