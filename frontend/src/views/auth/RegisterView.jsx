@@ -53,7 +53,7 @@ function RegisterView() {
         <br />
         <input
           type='number'
-          placeholder='Mobiele Number'
+          placeholder='Mobile Number'
           name=''
           id=''
           onChange={(e) => setPhone(e.target.value)}

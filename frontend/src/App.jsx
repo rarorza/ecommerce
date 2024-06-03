@@ -12,7 +12,7 @@ function App() {
         <Route path='/' element={<DashBoard />} />
         <Route path='/login' element={<LoginView />} />
         <Route path='/register' element={<RegisterView />} />
-        <Route path='/logout' element={<Logout />} />
+        <Route path='/logout' element={<LogoutView />} />
       </Routes>
     </BrowserRouter>
   )
