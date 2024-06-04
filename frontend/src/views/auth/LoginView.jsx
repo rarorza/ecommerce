@@ -53,6 +53,7 @@ function LoginView() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type='submit'>Login</button>
+        <Link to={'/forgot-password'}>Forgot Password</Link>
       </form>
     </div>
   )

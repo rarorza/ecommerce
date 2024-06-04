@@ -11,4 +11,5 @@ urlpatterns = [
         "user/password-reset/<email>/",
         userauth_views.PasswordResetAndEmailVerify.as_view(),
     ),
+    path("user/password-change/", userauth_views.PasswordChangeView.as_view()),
 ]
