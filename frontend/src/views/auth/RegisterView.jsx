@@ -24,7 +24,13 @@ function RegisterView() {
     e.preventDefault()
     setIsLoading(true)
 
-    const { error } = await register(fullName, email, phone, password, password2)
+    const { error } = await register(
+      fullName,
+      email,
+      phone,
+      password,
+      password2,
+    )
     if (error) {
       alert(JSON.stringify(error))
     } else {
@@ -36,46 +42,46 @@ function RegisterView() {
       <div>RegisterView</div>
       <form onSubmit={handleSubmit}>
         <input
-          type='text'
-          placeholder='Full Name'
-          name=''
-          id=''
+          type="text"
+          placeholder="Full Name"
+          name=""
+          id=""
           onChange={(e) => setFullName(e.target.value)}
         />
         <br />
         <input
-          type='email'
-          placeholder='E-mail'
-          name=''
-          id=''
+          type="email"
+          placeholder="E-mail"
+          name=""
+          id=""
           onChange={(e) => setEmail(e.target.value)}
         />
         <br />
         <input
-          type='number'
-          placeholder='Mobile Number'
-          name=''
-          id=''
+          type="number"
+          placeholder="Mobile Number"
+          name=""
+          id=""
           onChange={(e) => setPhone(e.target.value)}
         />
         <br />
         <input
-          type='password'
-          placeholder='Enter Password'
-          name=''
-          id=''
+          type="password"
+          placeholder="Enter Password"
+          name=""
+          id=""
           onChange={(e) => setPassword(e.target.value)}
         />
         <br />
         <input
-          type='password'
-          placeholder='Confirm your password'
-          name=''
-          id=''
+          type="password"
+          placeholder="Confirm your password"
+          name=""
+          id=""
           onChange={(e) => setPassword2(e.target.value)}
         />
         <br />
-        <button type='submit'>Register</button>
+        <button type="submit">Register</button>
       </form>
     </>
   )

@@ -1,6 +1,6 @@
-import { useEffect } from "react"
-import { logout } from "../../utils/auth"
-import { Link } from "react-router-dom"
+import { useEffect } from 'react'
+import { logout } from '../../utils/auth'
+import { Link } from 'react-router-dom'
 
 function LogoutView() {
   useEffect(() => {

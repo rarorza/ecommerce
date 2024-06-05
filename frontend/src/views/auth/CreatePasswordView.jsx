@@ -1,7 +1,7 @@
-import { useState } from "react"
-import { useSearchParams } from "react-router-dom"
-import { useNavigate } from "react-router-dom"
-import apiInstance from "../../utils/axios"
+import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import apiInstance from '../../utils/axios'
 
 function CreatePasswordView() {
   const [password, setPassword] = useState('')
@@ -25,10 +25,12 @@ function CreatePasswordView() {
       formData.append('uidb64', uidb64)
 
       try {
-        await apiInstance.post(`user/password-change/`, formData).then((res) => {
-          alert('Password changed successfully')
-          navigate('/login')
-        })
+        await apiInstance
+          .post(`user/password-change/`, formData)
+          .then((res) => {
+            alert('Password changed successfully')
+            navigate('/login')
+          })
       } catch (error) {
         console.log('error', error)
         alert('An error occured while trying to change the password')
@@ -42,13 +44,15 @@ function CreatePasswordView() {
       <form onSubmit={handlePasswordSubmit}>
         <input
           type="password"
-          name="" id=""
+          name=""
+          id=""
           placeholder="Enter new password"
           onChange={(e) => setPassword(e.target.value)}
-          />
+        />
         <input
           type="password"
-          name="" id=""
+          name=""
+          id=""
           placeholder="Confirm new password"
           onChange={(e) => setConfirmPassword(e.target.value)}
         />

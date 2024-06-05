@@ -1,6 +1,6 @@
-import { useState } from "react"
-import apiInstance from "../../utils/axios"
-import { useNavigate } from "react-router-dom"
+import { useState } from 'react'
+import apiInstance from '../../utils/axios'
+import { useNavigate } from 'react-router-dom'
 
 function ForgotPasswordView() {
   const [email, setEmail] = useState('')
@@ -9,8 +9,8 @@ function ForgotPasswordView() {
   const handleSubmit = async () => {
     try {
       await apiInstance.get(`user/password-reset/${email}/`).then((res) => {
-        alert("An e-mail has been sent to you")
-        navigate("/create-new-password")
+        alert('An e-mail has been sent to you')
+        navigate('/create-new-password')
       })
     } catch (error) {
       console.log('error', error)

@@ -24,7 +24,7 @@ function LoginView() {
   const handleLogin = (e) => {
     e.preventDefault()
     setIsLoading(true)
-    
+
     const { error } = login(email, password)
     if (error) {
       alert(error)
@@ -39,20 +39,22 @@ function LoginView() {
     <div>
       <form onSubmit={handleLogin}>
         <input
-          type='text'
-          name='email'
-          id='email'
+          type="text"
+          name="email"
+          id="email"
+          className="form-control"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
-          type='password'
-          name='password'
-          id='password'
+          type="password"
+          name="password"
+          id="password"
+          className="form-control"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type='submit'>Login</button>
+        <button type="submit">Login</button>
         <Link to={'/forgot-password'}>Forgot Password</Link>
       </form>
     </div>

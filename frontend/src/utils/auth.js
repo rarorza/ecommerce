@@ -7,7 +7,7 @@ export const login = async (email, password) => {
   try {
     const { data, status } = await axios.post('user/token/', {
       email,
-      password
+      password,
     })
 
     if (status === 200) {
@@ -17,19 +17,25 @@ export const login = async (email, password) => {
   } catch (error) {
     return {
       data: null,
-      error: error.response?.data || 'Something went wrong'
+      error: error.response?.data || 'Something went wrong',
     }
   }
 }
 
-export const register = async (full_name, email, phone, password, password2) => {
+export const register = async (
+  full_name,
+  email,
+  phone,
+  password,
+  password2,
+) => {
   try {
     const { data } = await axios.post('user/register/', {
-      full_name, 
-      email, 
-      phone, 
-      password, 
-      password2
+      full_name,
+      email,
+      phone,
+      password,
+      password2,
     })
 
     await login(email, password)
@@ -38,7 +44,7 @@ export const register = async (full_name, email, phone, password, password2) => 
   } catch (error) {
     return {
       data: null,
-      error: error.response?.data || 'Something went wrong'
+      error: error.response?.data || 'Something went wrong',
     }
   }
 }
@@ -52,7 +58,7 @@ export const logout = () => {
 export const setUser = async () => {
   const accessToken = Cookies.get('access_token')
   const refreshToken = Cookies.get('refresh_token')
-  
+
   if (!accessToken || !refreshToken) {
     return
   }
@@ -68,11 +74,11 @@ export const setUser = async () => {
 export const setAuthUser = (access_token, refresh_token) => {
   Cookies.set('access_token', access_token, {
     expires: 1,
-    secure: true
+    secure: true,
   })
   Cookies.set('refresh_token', refresh_token, {
     expires: 7,
-    secure: true
+    secure: true,
   })
 
   const user = jwt_decode(access_token) ?? null
@@ -86,7 +92,7 @@ export const setAuthUser = (access_token, refresh_token) => {
 export const getRefreshToken = async () => {
   const refresh_token = Cookies.get('refresh_token')
   const response = await axios.post('user/token/refresh/', {
-    refresh: refresh_token
+    refresh: refresh_token,
   })
   return response.data
 }
