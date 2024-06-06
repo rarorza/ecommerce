@@ -12,12 +12,12 @@ export const login = async (email, password) => {
 
     if (status === 200) {
       setAuthUser(data.access, data.refresh)
+      return { data, error: null }
     }
-    return { data, error: null }
   } catch (error) {
     return {
       data: null,
-      error: error.response?.data || 'Something went wrong',
+      error: error.response.data?.detail || 'Something went wrong',
     }
   }
 }
@@ -44,7 +44,7 @@ export const register = async (
   } catch (error) {
     return {
       data: null,
-      error: error.response?.data || 'Something went wrong',
+      error: error.response.data?.detail || 'Something went wrong',
     }
   }
 }
