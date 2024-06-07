@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from shortuuid.django_fields import ShortUUIDField
+from userauth.models import User
 from vendor.models import Vendor
 
 
@@ -22,12 +23,13 @@ class Category(models.Model):
 
 class Product(models.Model):
     STATUS = (
-        ("draft", "draft"),
+        ("draft", "Draft"),
         ("disabled", "Disabled"),
         ("in_review", "In Review"),
         ("published", "Published"),
     )
 
+    pid = ShortUUIDField(unique=True, length=10, alphabet="abcdefg12345")
     title = models.CharField(max_length=100)
     image = models.FileField(
         upload_to="products", default="product.jpg", null=True, blank=True
@@ -46,7 +48,6 @@ class Product(models.Model):
     views = models.PositiveIntegerField(default=0)
     rating = models.PositiveIntegerField(default=0)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
-    pid = ShortUUIDField(unique=True, length=10, alphabet="abcdefg12345")
     slug = models.SlugField(unique=True)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -60,12 +61,12 @@ class Product(models.Model):
 
 
 class Gallery(models.Model):
+    gid = ShortUUIDField(unique=True, length=10, alphabet="abcdefg12345")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     image = models.FileField(
         upload_to="products", default="product.jpg", null=True, blank=True
     )
     active = models.BooleanField(default=True)
-    gid = ShortUUIDField(unique=True, length=10, alphabet="abcdefg12345")
 
     def __str__(self):
         return str(self.product.__str__)
@@ -99,3 +100,104 @@ class Color(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+
+class Cart(models.Model):
+    cart_id = models.CharField(max_length=100, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    qty = models.PositiveIntegerField(default=0)
+    price = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    size = models.CharField(max_length=100, null=True, blank=True)
+    color = models.CharField(max_length=100, null=True, blank=True)
+    date = models.DateTimeField(auto_now_add=True)
+
+    sub_total = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    shipping_amount = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    service_fee = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    tax_fee = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    total = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.cart_id} - {self.product.__str__}"
+
+
+class CartOrder(models.Model):
+    PAYMENT_STATUS = (
+        ("paid", "Paid"),
+        ("pending", "Pending"),
+        ("processing", "Processing"),
+        ("cancelled", "Cancelled"),
+    )
+
+    ORDER_STATUS = (
+        ("pending", "Pending"),
+        ("fulfilled", "Fulfilled"),
+        ("cancelled", "Cancelled"),
+    )
+
+    oid = ShortUUIDField(unique=True, length=10, alphabet="abcdefg12345")
+    date = models.DateTimeField(auto_now_add=True)
+    vendor = models.ManyToManyField(Vendor, blank=True)
+    buyer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    sub_total = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    shipping_amount = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    service_fee = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    tax_fee = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    total = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+
+    payment_status = models.CharField(
+        choices=PAYMENT_STATUS, max_length=100, default="pending"
+    )
+    order_status = models.CharField(
+        choices=ORDER_STATUS, max_length=100, default="pending"
+    )
+
+    # Coupons
+    initial_total = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    saved = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+
+    # Bio Data
+    full_name = models.CharField(max_length=100, null=True, blank=True)
+    email = models.CharField(max_length=100, null=True, blank=True)
+    mobile = models.CharField(max_length=100, null=True, blank=True)
+
+    # Shipping Address
+    address = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.oid)
+
+
+class CartOrderItem(models.Model):
+    oid = ShortUUIDField(unique=True, length=10, alphabet="abcdefg12345")
+    date = models.DateTimeField(auto_now_add=True)
+    order = models.ForeignKey(
+        CartOrder, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    qty = models.PositiveIntegerField(default=0)
+    price = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    size = models.CharField(max_length=100, null=True, blank=True)
+    color = models.CharField(max_length=100, null=True, blank=True)
+
+    sub_total = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    shipping_amount = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    service_fee = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    tax_fee = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    total = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+
+    # Coupons
+    initial_total = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+    saved = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
+
+    def __str__(self):
+        return str(self.oid)
