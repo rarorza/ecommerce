@@ -57,3 +57,45 @@ class Product(models.Model):
         if self.slug == "" or self.slug is None:
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
+
+
+class Gallery(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    image = models.FileField(
+        upload_to="products", default="product.jpg", null=True, blank=True
+    )
+    active = models.BooleanField(default=True)
+    gid = ShortUUIDField(unique=True, length=10, alphabet="abcdefg12345")
+
+    def __str__(self):
+        return str(self.product.__str__)
+
+    class Meta:
+        verbose_name_plural = "Product Images"
+
+
+class Specification(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    title = models.CharField(max_length=1000)
+    content = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return str(self.title)
+
+
+class Size(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1000)
+    price = models.DecimalField(decimal_places=2, max_digits=12, default=0.00)
+
+    def __str__(self):
+        return str(self.name)
+
+
+class Color(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1000)
+    color_code = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return str(self.name)
