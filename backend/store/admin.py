@@ -5,10 +5,15 @@ from store.models import (
     CartOrderItem,
     Category,
     Color,
+    Coupon,
     Gallery,
+    Notification,
     Product,
+    ProductFaq,
+    Review,
     Size,
     Specification,
+    Wishlist,
 )
 
 
@@ -32,6 +37,20 @@ class SpecificationInline(admin.TabularInline):
     extra = 0
 
 
+class ProductFaqInline(admin.TabularInline):
+    model = ProductFaq
+    extra = 0
+
+
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ["user", "product"]
+
+
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ["vendor", "code", "active"]
+    list_editable = ["active"]
+
+
 class ProductAdmin(admin.ModelAdmin):
     list_display = [
         "title",
@@ -46,7 +65,13 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ["featured"]
     list_filter = ["date"]
     search_fields = ["title"]
-    inlines = [GalleryInline, ColorInline, SizeInline, SpecificationInline]
+    inlines = [
+        GalleryInline,
+        ColorInline,
+        SizeInline,
+        SpecificationInline,
+        ProductFaqInline,
+    ]
 
 
 admin.site.register(Category)
@@ -55,3 +80,7 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(Cart)
 admin.site.register(CartOrder)
 admin.site.register(CartOrderItem)
+admin.site.register(Review, ReviewAdmin)
+admin.site.register(Coupon, CouponAdmin)
+admin.site.register(Wishlist)
+admin.site.register(Notification)
