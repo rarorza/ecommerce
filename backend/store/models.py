@@ -71,6 +71,21 @@ class Product(models.Model):
         )
         return product_rating
 
+    def rating_count(self):
+        return Review.objects.filter(product=self).count()
+
+    def gallery(self):
+        return Gallery.objects.filter(product=self)
+
+    def specification(self):
+        return Specification.objects.filter(product=self)
+
+    def color(self):
+        return Color.objects.filter(product=self)
+
+    def size(self):
+        return Size.objects.filter(product=self)
+
 
 class Gallery(models.Model):
     gid = ShortUUIDField(unique=True, length=10, alphabet="abcdefg12345")
