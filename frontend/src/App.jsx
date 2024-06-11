@@ -8,18 +8,24 @@ import ForgotPasswordView from './views/auth/ForgotPasswordView'
 import CreatePasswordView from './views/auth/CreatePasswordView'
 import Footer from './components/base/Footer'
 import Header from './components/base/Header'
+import ProductsView from './views/store/ProductsView'
+import ProductDetailView from './views/store/ProductDetailView'
 
 function App() {
   return (
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route path="/" element={<HomeView />} />
+        <Route path="/dashboard" element={<HomeView />} />
         <Route path="/login" element={<LoginView />} />
         <Route path="/register" element={<RegisterView />} />
         <Route path="/logout" element={<LogoutView />} />
         <Route path="/forgot-password" element={<ForgotPasswordView />} />
         <Route path="/create-new-password" element={<CreatePasswordView />} />
+
+        {/*Store Components*/}
+        <Route path="/" element={<ProductsView />} />
+        <Route path="/detail/:slug/" element={<ProductDetailView />} />
       </Routes>
       <Footer />
     </BrowserRouter>

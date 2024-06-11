@@ -16,7 +16,7 @@ class ProductListAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
 
 
-class ProductAPIView(generics.ListAPIView):
+class ProductAPIView(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
 

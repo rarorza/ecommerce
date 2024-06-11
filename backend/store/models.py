@@ -48,7 +48,7 @@ class Product(models.Model):
     status = models.CharField(max_length=100, choices=STATUS, default="published")
     featured = models.BooleanField(default=False)
     views = models.PositiveIntegerField(default=0)
-    rating = models.PositiveIntegerField(default=0)
+    rating = models.PositiveIntegerField(default=0, null=True, blank=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     slug = models.SlugField(unique=True)
     date = models.DateTimeField(auto_now_add=True)
@@ -69,7 +69,7 @@ class Product(models.Model):
         product_rating = Review.objects.filter(product=self).aggregate(
             avg_rating=models.Avg("rating")
         )
-        return product_rating
+        return product_rating["avg_rating"]
 
     def rating_count(self):
         return Review.objects.filter(product=self).count()

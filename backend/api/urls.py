@@ -14,5 +14,5 @@ urlpatterns = [
     path("user/password-change/", userauth_views.PasswordChangeView.as_view()),
     path("categories/", store_views.CategoryListAPIView.as_view()),
     path("products/", store_views.ProductListAPIView.as_view()),
-    path("product/<slug>", store_views.ProductListAPIView.as_view()),
+    path("product/<slug>", store_views.ProductAPIView.as_view()),
 ]
