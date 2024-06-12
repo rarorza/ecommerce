@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import apiInstance from '../../utils/axios'
+import GetUserCountry from '../../components/plugins/GetUserCountry.jsx'
 
 function ProductDetailView() {
   const [product, setProduct] = useState({})
@@ -13,6 +14,8 @@ function ProductDetailView() {
   const [sizeValue, setSizeValue] = useState('No Size')
   const [qtyValue, setQtyValue] = useState(1)
 
+  const userCountry = GetUserCountry()
+
   const param = useParams()
 
   useEffect(() => {
@@ -23,7 +26,6 @@ function ProductDetailView() {
         setGallery(res.data.gallery)
         setColors(res.data.color)
         setSizes(res.data.size)
-        console.log(colors)
       }
     })
   }, [])
@@ -49,7 +51,7 @@ function ProductDetailView() {
   }
 
   const handleAddToCart = () => {
-    console.log(sizeValue, colorValue, qtyValue)
+    console.log(sizeValue, colorValue, qtyValue, userCountry)
   }
 
   return (
