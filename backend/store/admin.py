@@ -7,13 +7,12 @@ from store.models import (
     Color,
     Coupon,
     Gallery,
-    Notification,
     Product,
     ProductFaq,
     Review,
     Size,
     Specification,
-    Wishlist,
+    Tax,
 )
 
 
@@ -76,11 +75,9 @@ class ProductAdmin(admin.ModelAdmin):
 
 admin.site.register(Category)
 admin.site.register(Product, ProductAdmin)
-
 admin.site.register(Cart)
 admin.site.register(CartOrder)
 admin.site.register(CartOrderItem)
 admin.site.register(Review, ReviewAdmin)
 admin.site.register(Coupon, CouponAdmin)
-admin.site.register(Wishlist)
-admin.site.register(Notification)
+admin.site.register(Tax)
