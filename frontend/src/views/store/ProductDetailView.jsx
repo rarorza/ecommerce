@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import apiInstance from '../../utils/axios'
 import GetUserCountry from '../../components/plugins/GetUserCountry.jsx'
+import GetUserData from '../../components/plugins/GetUserData.jsx'
 
 function ProductDetailView() {
   const [product, setProduct] = useState({})
@@ -15,6 +16,7 @@ function ProductDetailView() {
   const [qtyValue, setQtyValue] = useState(1)
 
   const userCountry = GetUserCountry()
+  const userData = GetUserData()
 
   const param = useParams()
 
