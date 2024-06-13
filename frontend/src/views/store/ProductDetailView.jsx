@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import apiInstance from '../../utils/axios'
 import GetUserCountry from '../../components/plugins/GetUserCountry.jsx'
 import GetUserData from '../../components/plugins/GetUserData.jsx'
+import generateCartID from '../../components/plugins/generateCartID.jsx'
 
 function ProductDetailView() {
   const [product, setProduct] = useState({})
@@ -17,6 +18,7 @@ function ProductDetailView() {
 
   const userCountry = GetUserCountry()
   const userData = GetUserData()
+  const cartID = generateCartID()
 
   const param = useParams()
 
