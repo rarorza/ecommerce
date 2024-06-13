@@ -73,7 +73,7 @@ class CartAPIView(generics.ListCreateAPIView):
             cart.color = color
             cart.size = size
             cart.country = country
-            cart.id = cart_id
+            cart.cart_id = cart_id
 
             service_fee_percentage = 20 / 100
             cart.service_fee = Decimal(service_fee_percentage) * cart.sub_total
@@ -86,6 +86,7 @@ class CartAPIView(generics.ListCreateAPIView):
                 {"message": "Cart Updated Successfully"}, status=status.HTTP_200_OK
             )
         else:
+            # when user does not exist
             cart = Cart()
             cart.product = product
             cart.user = user
@@ -97,7 +98,7 @@ class CartAPIView(generics.ListCreateAPIView):
             cart.color = color
             cart.size = size
             cart.country = country
-            cart.id = cart_id
+            cart.cart_id = cart_id
 
             service_fee_percentage = 20 / 100
             cart.service_fee = Decimal(service_fee_percentage) * cart.sub_total

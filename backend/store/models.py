@@ -53,6 +53,9 @@ class Product(models.Model):
     slug = models.SlugField(unique=True)
     date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return str(self.title)
+
     def save(self, *args, **kwargs):
         self.rating = self.product_rating()
         if self.slug == "" or self.slug is None:
@@ -93,7 +96,7 @@ class Gallery(models.Model):
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return str(self.product.__str__)
+        return str(self.product.title)
 
     class Meta:
         verbose_name_plural = "Product Images"
@@ -129,7 +132,7 @@ class Color(models.Model):
 class Cart(models.Model):
     cart_id = models.CharField(max_length=100, null=True, blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     qty = models.PositiveIntegerField(default=0)
     price = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
     country = models.CharField(max_length=100, null=True, blank=True)
@@ -144,7 +147,7 @@ class Cart(models.Model):
     total = models.DecimalField(default=0.00, max_digits=12, decimal_places=2)
 
     def __str__(self):
-        return f"{self.cart_id} - {self.product.__str__}"
+        return f"{self.cart_id} - {self.product.title}"
 
 
 class CartOrder(models.Model):
@@ -260,7 +263,7 @@ class Review(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.product.__str__)
+        return str(self.product.title)
 
     class Meta:
         verbose_name_plural = "Product Reviews"
@@ -285,7 +288,7 @@ class Wishlist(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.product.__str__)
+        return str(self.product.title)
 
 
 class Notification(models.Model):
@@ -302,7 +305,7 @@ class Notification(models.Model):
 
     def __str__(self):
         if self.order:
-            return str(self.order.__str__)
+            return str(self.order.oid)
         else:
             return f"Notification - {self.pk}"
 

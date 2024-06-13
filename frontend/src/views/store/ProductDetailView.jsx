@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import apiInstance from '../../utils/axios'
 import GetUserCountry from '../../components/plugins/GetUserCountry.jsx'
 import GetUserData from '../../components/plugins/GetUserData.jsx'
-import generateCartID from '../../components/plugins/generateCartID.jsx'
+import GenerateCartID from '../../components/plugins/GenerateCartID.jsx'
 
 function ProductDetailView() {
   const [product, setProduct] = useState({})
@@ -16,9 +16,9 @@ function ProductDetailView() {
   const [sizeValue, setSizeValue] = useState('No Size')
   const [qtyValue, setQtyValue] = useState(1)
 
-  const userCountry = GetUserCountry()
+  const userAddress = GetUserCountry()
   const userData = GetUserData()
-  const cartID = generateCartID()
+  const cartID = GenerateCartID()
 
   const param = useParams()
 
@@ -54,8 +54,23 @@ function ProductDetailView() {
     setQtyValue(e.target.value)
   }
 
-  const handleAddToCart = () => {
-    console.log(sizeValue, colorValue, qtyValue, userCountry)
+  const handleAddToCart = async () => {
+    try {
+      const formData = new FormData()
+      formData.append('product_id', product.id)
+      formData.append('user_id', userData?.user_id)
+      formData.append('qty', qtyValue)
+      formData.append('price', product.price)
+      formData.append('shipping_amount', product.shipping_amount)
+      formData.append('country', userAddress.country)
+      formData.append('size', sizeValue)
+      formData.append('color', colorValue)
+      formData.append('cart_id', cartID)
+
+      const response = await apiInstance.post(`cart/`, formData)
+    } catch (error) {
+      console.log('error', error)
+    }
   }
 
   return (

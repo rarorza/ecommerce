@@ -1,4 +1,4 @@
-function generateCartID() {
+function GenerateCartID() {
   // To help identify the cart if the user is not logged in
   const generateRandomString = () => {
     const length = 30
@@ -9,15 +9,14 @@ function generateCartID() {
       const randomIndex = Math.floor(Math.random() * characters.length)
       randomString += characters.charAt(randomIndex)
     }
-
     localStorage.setItem('randomString', randomString)
-    const existingRandomString = localStorage.getItem('randomString')
-    if (!existingRandomString) {
-      generateRandomString()
-    }
-
-    return existingRandomString
   }
+
+  const existingRandomString = localStorage.getItem('randomString')
+  if (!existingRandomString) {
+    generateRandomString()
+  }
+  return existingRandomString
 }
 
-export default generateCartID
+export default GenerateCartID
