@@ -9,6 +9,7 @@ ProductCard.propTypes = {
   qtyValue: PropTypes.number,
   selectedSizes: PropTypes.object,
   selectedColors: PropTypes.object,
+  handleAddToCart: PropTypes.func,
 }
 
 function ProductCard({
@@ -19,6 +20,7 @@ function ProductCard({
   qtyValue,
   selectedSizes,
   selectedColors,
+  handleAddToCart,
 }) {
   return (
     <>
@@ -127,7 +129,17 @@ function ProductCard({
                   </div>
                 )}
                 <div className="d-flex mt-3 p-1">
-                  <button type="button" className="btn btn-primary me-1 mb-1">
+                  <button
+                    type="button"
+                    className="btn btn-primary me-1 mb-1"
+                    onClick={() =>
+                      handleAddToCart(
+                        product.id,
+                        product.price,
+                        product.shipping_amount,
+                      )
+                    }
+                  >
                     <i className="fas fa-shopping-cart" />
                   </button>
                   <button

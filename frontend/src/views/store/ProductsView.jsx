@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import apiInstance from '../../utils/axios'
 import { Link } from 'react-router-dom'
 import ProductCard from '../../components/ProductCard'
+import GetUserCountry from '../../components/plugins/GetUserCountry.jsx'
+import GetUserData from '../../components/plugins/GetUserData.jsx'
+import GenerateCartID from '../../components/plugins/GenerateCartID.jsx'
 
 function Products() {
   const [products, setProducts] = useState([])
@@ -14,6 +17,10 @@ function Products() {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [selectedColors, setSelectedColors] = useState({})
   const [selectedSizes, setSelectedSizes] = useState({})
+
+  const userAddress = GetUserCountry()
+  const userData = GetUserData()
+  const cartID = GenerateCartID()
 
   useEffect(() => {
     apiInstance.get('products/').then((res) => {
@@ -52,8 +59,26 @@ function Products() {
   }
 
   const handleQtyChange = (e, productId) => {
-    setQtyValue(e.target.value)
+    setQtyValue(parseInt(e.target.value))
     setSelectedProduct(productId)
+  }
+
+  const handleAddToCart = async (productId, price, shippingAmount) => {
+    try {
+      const formData = new FormData()
+      formData.append('product_id', productId)
+      formData.append('user_id', userData?.user_id)
+      formData.append('qty', qtyValue)
+      formData.append('price', price)
+      formData.append('shipping_amount', shippingAmount)
+      formData.append('country', userAddress.country)
+      formData.append('size', sizeValue)
+      formData.append('color', colorValue)
+      formData.append('cart_id', cartID)
+      const response = await apiInstance.post(`cart/`, formData)
+    } catch (error) {
+      console.log('error', error)
+    }
   }
 
   return (
@@ -73,6 +98,7 @@ function Products() {
                     qtyValue={qtyValue}
                     selectedSizes={selectedSizes}
                     selectedColors={selectedColors}
+                    handleAddToCart={handleAddToCart}
                   />
                 ))}
                 <div className="row">
