@@ -5,6 +5,15 @@ import ProductCard from '../../components/ProductCard'
 import GetUserCountry from '../../components/plugins/GetUserCountry.jsx'
 import GetUserData from '../../components/plugins/GetUserData.jsx'
 import GenerateCartID from '../../components/plugins/GenerateCartID.jsx'
+import Swal from 'sweetalert2'
+
+const ToastNotification = Swal.mixin({
+  toast: true,
+  position: 'top',
+  showConfirmButton: false,
+  timer: 2000,
+  timerProgressBar: true,
+})
 
 function Products() {
   const [products, setProducts] = useState([])
@@ -76,6 +85,11 @@ function Products() {
       formData.append('color', colorValue)
       formData.append('cart_id', cartID)
       const response = await apiInstance.post(`cart/`, formData)
+
+      ToastNotification.fire({
+        icon: 'success',
+        title: response.data.message,
+      })
     } catch (error) {
       console.log('error', error)
     }

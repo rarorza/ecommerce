@@ -2,6 +2,15 @@ import { useAuthStore } from '../store/auth'
 import axios from './axios'
 import jwt_decode from 'jwt-decode'
 import Cookies from 'js-cookie'
+import Swal from 'sweetalert2'
+
+const ToastNotification = Swal.mixin({
+  toast: true,
+  position: 'top',
+  showConfirmButton: false,
+  timer: 2000,
+  timerProgressBar: true,
+})
 
 export const login = async (email, password) => {
   try {
@@ -12,6 +21,10 @@ export const login = async (email, password) => {
 
     if (status === 200) {
       setAuthUser(data.access, data.refresh)
+      ToastNotification.fire({
+        icon: 'success',
+        title: 'Login Successfuly',
+      })
       return { data, error: null }
     }
   } catch (error) {
@@ -39,6 +52,11 @@ export const register = async (
     })
 
     await login(email, password)
+
+    ToastNotification.fire({
+      icon: 'success',
+      title: 'Account Created Successfuly',
+    })
 
     return { data, error: null }
   } catch (error) {
