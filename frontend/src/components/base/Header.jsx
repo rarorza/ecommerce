@@ -1,7 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useAuthStore } from '../../store/auth'
 
 function Header() {
+  const [isLoggedIn, user] = useAuthStore((state) => [
+    state.isLoggedIn,
+    state.user,
+  ])
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -145,28 +150,28 @@ function Header() {
                 Search
               </button>
             </div>
-            <Link className="btn btn-primary me-2" to="/login">
-              Login
-            </Link>
-            <Link className="btn btn-primary me-2" to="/register">
-              Register
-            </Link>
-            {/* These are the button rendered based on users logged in status */}
-            {/* You could just un-comment it ;) */}
-
-            {/* {isLoggedIn()
-                ?
-                <>
-                    <Link className="btn btn-primary me-2" to={'/customer/account/'}>Account</Link>
-                    <Link className="btn btn-primary me-2" to="/logout">Logout</Link>
-                </>
-                :
-                <>
-                    <Link className="btn btn-primary me-2" to="/login">Login</Link>
-                    <Link className="btn btn-primary me-2" to="/register">Register</Link>
-
-                </>
-            } */}
+            {isLoggedIn() ? (
+              <>
+                <Link
+                  className="btn btn-primary me-2"
+                  to={'/customer/account/'}
+                >
+                  Account
+                </Link>
+                <Link className="btn btn-primary me-2" to="/logout">
+                  Logout
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link className="btn btn-primary me-2" to="/login">
+                  Login
+                </Link>
+                <Link className="btn btn-primary me-2" to="/register">
+                  Register
+                </Link>
+              </>
+            )}
             {/* <Link className="btn btn-danger" to="/cart/"><i className='fas fa-shopping-cart'></i> <span id='cart-total-items'>{cartCount || 0}</span></Link> */}
           </div>
         </div>
