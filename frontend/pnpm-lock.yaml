@@ -60,7 +60,7 @@ importers:
         specifier: 6.10.0
         version: 6.10.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       sweetalert2:
-        specifier: ^11.7.32
+        specifier: ^11.10.8
         version: 11.10.8
       yet-another-react-lightbox:
         specifier: ^3.14.0
