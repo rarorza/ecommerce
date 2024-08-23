@@ -172,7 +172,11 @@ function Header() {
                 </Link>
               </>
             )}
-            {/* <Link className="btn btn-danger" to="/cart/"><i className='fas fa-shopping-cart'></i> <span id='cart-total-items'>{cartCount || 0}</span></Link> */}
+            <Link className="btn btn-danger" to="/cart">
+              <i className="fas fa-shopping-cart"></i>{' '}
+              <span id="cart-total-items">0</span>
+            </Link>
+            {/* <Link className="btn btn-danger" to="/cart"><i className='fas fa-shopping-cart'></i> <span id='cart-total-items'>{cartCount || 0}</span></Link> */}
           </div>
         </div>
       </nav>
