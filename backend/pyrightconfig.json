@@ -1,5 +1,5 @@
 {
-  "venvPath": "~/dev/ecommerce/backend",
+  "venvPath": ".",
   "venv": "venv",
   "reportArgumentType": false,
   "reportAttributeAccessIssue": false
