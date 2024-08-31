@@ -16,6 +16,7 @@ function GenerateCartID() {
   if (!existingRandomString) {
     generateRandomString()
   }
+  console.log(localStorage.getItem('randomString'))
   return existingRandomString
 }
 

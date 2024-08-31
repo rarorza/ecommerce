@@ -126,7 +126,7 @@ class CartListView(generics.ListAPIView):
         user_id = self.kwargs.get("user_id")
 
         if user_id is not None:
-            user = User.objects.filter(id=user_id)
+            user = User.objects.filter(id=user_id).first()
             queryset = Cart.objects.filter(user=user, cart_id=cart_id)
         else:
             queryset = Cart.objects.filter(cart_id=cart_id)
