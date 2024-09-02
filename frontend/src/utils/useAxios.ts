@@ -5,8 +5,7 @@ import Cookies from 'js-cookie'
 
 // Will intercepts every request to the server and validated the refresh token
 const useAxios = async () => {
-  const access_token = Cookies.get('access_token')
-  const refresh_token = Cookies.get('refresh_token')
+  const access_token = Cookies.get('access_token') ?? ''
 
   const axiosInstance = axios.create({
     baseURL: BASE_URL,
@@ -17,10 +16,10 @@ const useAxios = async () => {
     if (!isAccessTokenExpired(access_token)) {
       return req
     }
-    const responseToken = await getRefreshToken(refresh_token)
+    const responseToken = await getRefreshToken()
     setAuthUser(responseToken.access, responseToken.refresh)
 
-    req.headers.Authorization = `Bearer ${responseToken.data.access}`
+    req.headers.Authorization = `Bearer ${responseToken.access}`
     return req
   })
 

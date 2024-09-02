@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const apiInstance = axios.create({
+const apiInstace = axios.create({
   baseURL: 'http://127.0.0.1:8000/api/v1/',
   timeout: 5000,
   headers: {
@@ -9,4 +9,4 @@ const apiInstance = axios.create({
   },
 })
 
-export default apiInstance
+export default apiInstace

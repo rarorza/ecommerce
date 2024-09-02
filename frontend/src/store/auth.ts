@@ -1,8 +1,17 @@
 import { create } from 'zustand'
 import { mountStoreDevtool } from 'simple-zustand-devtools'
 import { persist } from 'zustand/middleware'
+import { IUserDataJwt } from '../shared/user.interface'
+interface IAuthStore {
+  allUserData: IUserDataJwt | null
+  loading: boolean
+  user: () => IUserDataJwt
+  setUser: (user: IUserDataJwt) => void
+  setLoading: (loading: boolean) => void
+  isLoggedIn: () => boolean
+}
 
-const useAuthStore = create(
+const useAuthStore = create<IAuthStore>()(
   persist(
     (set, get) => ({
       allUserData: null,

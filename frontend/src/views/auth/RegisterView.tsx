@@ -20,7 +20,7 @@ function RegisterView() {
     }
   }, [])
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
 

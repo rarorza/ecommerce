@@ -14,14 +14,14 @@ function LoginView() {
     if (isLoggedIn()) {
       navigate('/')
     }
-  }, [])
+  }, [isLoggedIn, navigate])
 
   const resetForm = () => {
     setEmail('')
     setPassword('')
   }
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
 

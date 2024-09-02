@@ -1,18 +1,25 @@
 import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
+import { IProduct } from '../shared/product.interface'
 
-ProductCard.propTypes = {
-  product: PropTypes.object,
-  handleQtyChange: PropTypes.func,
-  handleSizeButtonClick: PropTypes.func,
-  handleColorButtonClick: PropTypes.func,
-  qtyValue: PropTypes.number,
-  selectedSizes: PropTypes.object,
-  selectedColors: PropTypes.object,
-  handleAddToCart: PropTypes.func,
+interface Props {
+  product: IProduct
+  handleQtyChange: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    productId: number,
+  ) => void
+  handleSizeButtonClick: (productId: number, sizeName: string) => void
+  handleColorButtonClick: (productId: number, colorName: string) => void
+  qtyValue: number
+  selectedSizes: object
+  selectedColors: object
+  handleAddToCart: (
+    productId: number,
+    price: number,
+    shippingAmount: number,
+  ) => void
 }
 
-function ProductCard({
+const ProductCard = ({
   product,
   handleQtyChange,
   handleSizeButtonClick,
@@ -21,7 +28,7 @@ function ProductCard({
   selectedSizes,
   selectedColors,
   handleAddToCart,
-}) {
+}: Props) => {
   return (
     <>
       <div className="col-lg-4 col-md-12 mb-4">
@@ -52,7 +59,7 @@ function ProductCard({
             <div className="d-flex justify-content-center">
               <h6 className="mb-3">${product.price}</h6>
               <h6 className="mb-3 text-muted ms-2">
-                <strike>${product.old_price}</strike>
+                <del>${product.old_price}</del>
               </h6>
             </div>
             <div className="btn-group">
@@ -95,8 +102,8 @@ function ProductCard({
                         <li key={index}>
                           <button
                             className="btn btn-secondary btn-sm me-2 mb-1"
-                            onClick={(e) =>
-                              handleSizeButtonClick(e, product.id, size.name)
+                            onClick={() =>
+                              handleSizeButtonClick(product.id, size.name)
                             }
                           >
                             {size.name}
@@ -119,8 +126,8 @@ function ProductCard({
                             style={{
                               backgroundColor: `${color.name}`,
                             }}
-                            onClick={(e) =>
-                              handleColorButtonClick(e, product.id, color.name)
+                            onClick={() =>
+                              handleColorButtonClick(product.id, color.name)
                             }
                           />
                         </li>

@@ -2,16 +2,18 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 
 import apiInstance from '../../utils/axios'
-import GetUserData from '../../components/plugins/GetUserData'
-import GenarateCartID from '../../components/plugins/GenerateCartID'
+import GetUserData from '../../utils/plugins/GetUserData'
+import GenarateCartID from '../../utils/plugins/GenerateCartID'
+import { ICart } from '../../shared/cart.interface'
+import { get } from 'lodash'
 
 function Cart() {
-  const [cart, setCart] = useState([])
+  const [cart, setCart] = useState<Array<ICart>>()
 
   const userData = GetUserData()
-  const cartId = GenarateCartID()
+  const cartId = GenarateCartID() || null
 
-  const fetchCartData = (cartId, userId) => {
+  const fetchCartData = (cartId: string, userId: number | null) => {
     const url = userId
       ? `cart-list/${cartId}/${userId}/`
       : `cart-list/${cartId}/`
@@ -25,13 +27,14 @@ function Cart() {
     if (cartId !== null || cartId !== undefined) {
       if (userData !== undefined) {
         // Send cart data with useId and cartId
-        fetchCartData(cartId, userData?.user_id)
+        const userId = userData?.user_id
+        fetchCartData(cartId, userId)
       } else {
         // Send cart data without userId, with only cartId
         fetchCartData(cartId, null)
       }
     }
-  }, [cartId, userData])
+  }, [cartId])
 
   return (
     <div>
@@ -78,7 +81,7 @@ function Cart() {
                           </div>
                           <div className="col-md-8 mb-4 mb-md-0">
                             <Link to={null} className="fw-bold text-dark mb-4">
-                              {c.product?.title}
+                              {c?.product?.title}
                             </Link>
                             {c.size !== 'No Size' && (
                               <p className="mb-0">
@@ -138,7 +141,7 @@ function Cart() {
                         </div>
                       ))}
 
-                      {cart?.length < 1 && (
+                      {get(cart, 'length', 0) < 1 && (
                         <>
                           <h5>Your Cart Is Empty</h5>
                           <Link to="/">
@@ -150,7 +153,7 @@ function Cart() {
                       )}
                     </section>
 
-                    {cart?.length > 0 && (
+                    {get(cart, 'length', 1) > 0 && (
                       <div>
                         <h5 className="mb-4 mt-4">Personal Information</h5>
                         {/* 2 column grid layout with text inputs for the first and last names */}

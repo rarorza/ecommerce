@@ -1,13 +1,14 @@
 import Cookies from 'js-cookie'
-import jwtDecode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
+import { IUserDataJwt } from '../auth'
 
 function GetUserData() {
-  let access_token = Cookies.get('access_token')
-  let refresh_token = Cookies.get('refresh_token')
+  const access_token = Cookies.get('access_token')
+  const refresh_token = Cookies.get('refresh_token')
 
   if (access_token && refresh_token) {
     const token = refresh_token
-    const decoded = jwtDecode(token)
+    const decoded: IUserDataJwt = jwtDecode(token)
     return decoded
   } else {
     console.log('User token does not exists')

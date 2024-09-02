@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import apiInstance from '../../utils/axios'
-import GetUserCountry from '../../components/plugins/GetUserCountry.jsx'
-import GetUserData from '../../components/plugins/GetUserData.jsx'
-import GenerateCartID from '../../components/plugins/GenerateCartID.jsx'
+import GetUserCountry from '../../utils/plugins/GetUserCountry.jsx'
+import GetUserData from '../../utils/plugins/GetUserData.jsx'
+import GenerateCartID from '../../utils/plugins/GenerateCartID.js'
+import { IProduct } from '../../shared/product.interface.ts'
+import { get } from 'lodash'
+import { IGallery } from '../../shared/gallery.interface.ts'
+import { ISpecifications } from '../../shared/specifications.interface.ts'
+import { IColors } from '../../shared/colors.interface.ts'
+import { ISizes } from '../../shared/sizes.interface.ts'
 
 function ProductDetailView() {
-  const [product, setProduct] = useState({})
-  const [specifications, setSpecifications] = useState([])
-  const [gallery, setGallery] = useState([])
-  const [colors, setColors] = useState([])
-  const [sizes, setSizes] = useState([])
+  const [product, setProduct] = useState<IProduct>()
+  const [specifications, setSpecifications] = useState<ISpecifications[]>()
+  const [gallery, setGallery] = useState<IGallery[]>()
+  const [colors, setColors] = useState<IColors[]>()
+  const [sizes, setSizes] = useState<ISizes[]>()
 
   const [colorValue, setColorValue] = useState('No Color')
   const [sizeValue, setSizeValue] = useState('No Size')
@@ -32,7 +38,7 @@ function ProductDetailView() {
         setSizes(res.data.size)
       }
     })
-  }, [])
+  }, [product, param.slug])
 
   const handleColorButtonClick = (e) => {
     e.preventDefault()
@@ -57,17 +63,20 @@ function ProductDetailView() {
   const handleAddToCart = async () => {
     try {
       const formData = new FormData()
-      formData.append('product_id', product.id)
-      formData.append('user_id', userData?.user_id)
-      formData.append('qty', qtyValue)
-      formData.append('price', product.price)
-      formData.append('shipping_amount', product.shipping_amount)
-      formData.append('country', userAddress.country)
+      formData.append('product_id', product ? product.id.toString() : '')
+      formData.append('user_id', get(userData, 'user_id'.toString(), ''))
+      formData.append('qty', qtyValue.toString())
+      formData.append('price', get(product, 'price'.toString(), ''))
+      formData.append(
+        'shipping_amount',
+        get(product, 'shipping_amount'.toString(), ''),
+      )
+      formData.append('country', get(userAddress, 'country', ''))
       formData.append('size', sizeValue)
       formData.append('color', colorValue)
       formData.append('cart_id', cartID)
 
-      const response = await apiInstance.post(`cart/`, formData)
+      await apiInstance.post(`cart/`, formData)
     } catch (error) {
       console.log('error', error)
     }
@@ -87,7 +96,7 @@ function ProductDetailView() {
                     <div className="col-12 col-lg-12">
                       <div className="lightbox">
                         <img
-                          src={product.image}
+                          src={product?.image}
                           style={{
                             width: '100%',
                             height: 500,
@@ -123,7 +132,7 @@ function ProductDetailView() {
               <div className="col-md-6 mb-4 mb-md-0">
                 {/* Details */}
                 <div>
-                  <h1 className="fw-bold mb-3">{product.title}</h1>
+                  <h1 className="fw-bold mb-3">{product?.title}</h1>
                   <div className="d-flex text-primary just align-items-center">
                     <ul
                       className="mb-3 d-flex p-0"
@@ -161,11 +170,11 @@ function ProductDetailView() {
                   </div>
                   <h5 className="mb-3">
                     <s className="text-muted me-2 small align-middle">
-                      ${product.old_price}
+                      ${product?.old_price}
                     </s>
-                    <span className="align-middle">${product.price}</span>
+                    <span className="align-middle">${product?.price}</span>
                   </h5>
-                  <p className="text-muted">{product.description}</p>
+                  <p className="text-muted">{product?.description}</p>
                   <div className="table-responsive">
                     <table className="table table-sm table-borderless mb-0">
                       <tbody>
@@ -173,7 +182,7 @@ function ProductDetailView() {
                           <th className="ps-0 w-25" scope="row">
                             <strong>Category</strong>
                           </th>
-                          <td>{product.category?.title}</td>
+                          <td>{product?.category?.title}</td>
                         </tr>
                         {specifications?.map((s, index) => (
                           <tr key={index}>
@@ -207,7 +216,7 @@ function ProductDetailView() {
                       </div>
 
                       {/* Size */}
-                      {sizes.length > 0 && (
+                      {get(sizes, 'length', 0) > 0 && (
                         <div className="col-md-6 mb-4">
                           <div className="form-outline">
                             <label className="form-label" htmlFor="typeNumber">
@@ -235,7 +244,7 @@ function ProductDetailView() {
                       )}
 
                       {/* Colors */}
-                      {colors.length > 0 && (
+                      {get(colors, 'length', 0) > 0 && (
                         <div className="col-md-6 mb-4">
                           <div className="form-outline">
                             <label className="form-label" htmlFor="typeNumber">
