@@ -131,3 +131,45 @@ class CartListView(generics.ListAPIView):
         else:
             queryset = Cart.objects.filter(cart_id=cart_id)
         return queryset
+
+
+class CartDetailView(generics.RetrieveAPIView):
+    serializer_class = CartSerializer
+    permission_classes = [AllowAny]
+    lookup_field = "cart_id"
+
+    def get_queryset(self):
+        cart_id = self.kwargs["cart_id"]
+        user_id = self.kwargs.get("user_id")
+
+        if user_id is not None:
+            user = User.objects.filter(id=user_id).first()
+            queryset = Cart.objects.filter(user=user, cart_id=cart_id)
+        else:
+            queryset = Cart.objects.filter(cart_id=cart_id)
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        total_shipping = 0.0
+        total_tax = 0.0
+        total_service_fee = 0.0
+        total_sub_total = 0.0
+        total = 0.0
+        for cart_item in queryset:
+            total_shipping += float(cart_item.shipping_amount)
+            total_tax += float(cart_item.tax_fee)
+            total_service_fee += float(cart_item.service_fee)
+            total_sub_total += float(cart_item.sub_total)
+            total += float(cart_item.total)
+
+        data = {
+            "shipping": total_shipping,
+            "tax": total_tax,
+            "service_fee": total_service_fee,
+            "sub_total": total_sub_total,
+            "total": total,
+        }
+
+        return Response(data)
