@@ -39,6 +39,14 @@ function Cart() {
   const userData = GetUserData()
   const cartId = GenarateCartID()
 
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [mobile, setMobile] = useState('')
+  const [address, setAddress] = useState('')
+  const [city, setCity] = useState('')
+  const [state, setState] = useState('')
+  const [country, setCountry] = useState('')
+
   // Cart General
 
   const fetchCartData = (cartId: string, userId: number | null) => {
@@ -153,6 +161,41 @@ function Cart() {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  // Shipping Details
+
+  const handleShippingDetails = (e) => {
+    const { name, value } = e.target
+    switch (name) {
+      case 'fullName':
+        setFullName(value)
+        break
+      case 'email':
+        setEmail(value)
+        break
+      case 'mobile':
+        setMobile(value)
+        break
+      case 'address':
+        setAddress(value)
+        break
+      case 'city':
+        setCity(value)
+        break
+      case 'state':
+        setState(value)
+        break
+      case 'country':
+        setCountry(value)
+        break
+      default:
+        break
+    }
+  }
+
+  const handleCheckout = () => {
+    console.log('order')
   }
 
   return (
@@ -301,6 +344,8 @@ function Cart() {
                                 id=""
                                 name="fullName"
                                 className="form-control"
+                                onChange={handleShippingDetails}
+                                value={fullName}
                               />
                             </div>
                           </div>
@@ -320,6 +365,8 @@ function Cart() {
                                 id="form6Example1"
                                 className="form-control"
                                 name="email"
+                                onChange={handleShippingDetails}
+                                value={email}
                               />
                             </div>
                           </div>
@@ -336,6 +383,8 @@ function Cart() {
                                 id="form6Example1"
                                 className="form-control"
                                 name="mobile"
+                                onChange={handleShippingDetails}
+                                value={mobile}
                               />
                             </div>
                           </div>
@@ -358,6 +407,8 @@ function Cart() {
                                 id="form6Example1"
                                 className="form-control"
                                 name="address"
+                                onChange={handleShippingDetails}
+                                value={address}
                               />
                             </div>
                           </div>
@@ -375,6 +426,8 @@ function Cart() {
                                 id="form6Example1"
                                 className="form-control"
                                 name="city"
+                                onChange={handleShippingDetails}
+                                value={city}
                               />
                             </div>
                           </div>
@@ -393,6 +446,8 @@ function Cart() {
                                 id="form6Example1"
                                 className="form-control"
                                 name="state"
+                                onChange={handleShippingDetails}
+                                value={state}
                               />
                             </div>
                           </div>
@@ -410,6 +465,8 @@ function Cart() {
                                 id="form6Example1"
                                 className="form-control"
                                 name="country"
+                                onChange={handleShippingDetails}
+                                value={country}
                               />
                             </div>
                           </div>
@@ -443,7 +500,10 @@ function Cart() {
                         <span>Total </span>
                         <span>${cartTotal?.total.toFixed(2)}</span>
                       </div>
-                      <button className="btn btn-primary btn-rounded w-100">
+                      <button
+                        onClick={handleCheckout}
+                        className="btn btn-primary btn-rounded w-100"
+                      >
                         Got to checkout
                       </button>
                     </section>
