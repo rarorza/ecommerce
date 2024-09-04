@@ -46,17 +46,25 @@ function Cart() {
       ? `cart-list/${cartId}/${userId}/`
       : `cart-list/${cartId}/`
 
-    apiInstance.get(url).then((res) => {
-      setCart(res.data)
-    })
+    try {
+      apiInstance.get(url).then((res) => {
+        setCart(res.data)
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const fetchCartTotal = (cartId: string, userId: number | null) => {
     const url = userId ? `cart-detail/${cartId}/` : `cart-detail/${cartId}/`
 
-    apiInstance.get(url).then((res) => {
-      setCartTotal(res.data)
-    })
+    try {
+      apiInstance.get(url).then((res) => {
+        setCartTotal(res.data)
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }
   useEffect(() => {
     if (cartId !== null || cartId !== undefined) {
@@ -100,15 +108,19 @@ function Cart() {
     })
 
     formData.append('data', data)
-    const response = await apiInstance.post('cart/', formData)
+    try {
+      const response = await apiInstance.post('cart/', formData)
 
-    fetchCartData(cartId, userData?.user_id)
-    fetchCartTotal(cartId, userData?.user_id)
+      fetchCartData(cartId, userData?.user_id)
+      fetchCartTotal(cartId, userData?.user_id)
 
-    ToastNotification.fire({
-      icon: 'success',
-      title: response.data.message,
-    })
+      ToastNotification.fire({
+        icon: 'success',
+        title: response.data.message,
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   useEffect(() => {
@@ -120,6 +132,28 @@ function Cart() {
       setProductsQuantities(initialQuantities)
     }
   }, [cart])
+
+  // Delete Item
+
+  const handleDeleteCartItem = async (itemId: number) => {
+    const url = userData?.user_id
+      ? `cart-delete/${cartId}/${itemId}/${userData?.user_id}`
+      : `cart-delete/${cartId}/${itemId}`
+
+    try {
+      await apiInstance.delete(url)
+
+      fetchCartData(cartId, userData?.user_id)
+      fetchCartTotal(cartId, userData?.user_id)
+
+      ToastNotification.fire({
+        icon: 'success',
+        title: 'Item removed from cart',
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div>
@@ -195,7 +229,10 @@ function Cart() {
                               <span>Rarorza</span>
                             </p>
                             <p className="mt-3">
-                              <button className="btn btn-danger ">
+                              <button
+                                onClick={() => handleDeleteCartItem(c.id)}
+                                className="btn btn-danger "
+                              >
                                 <small>
                                   <i className="fas fa-trash me-2" />
                                   Remove
