@@ -202,7 +202,11 @@ class CreateOrderAPIView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def create(self, request):
-        payload = request.data
+        key = list(request.data.keys())
+        if len(key) == 1:
+            payload = json.loads(request.data[key[0]])
+        else:
+            payload = request.data
 
         full_name = payload["full_name"]
         email = payload["email"]
@@ -229,6 +233,7 @@ class CreateOrderAPIView(generics.CreateAPIView):
         total = Decimal(0.00)
 
         order = CartOrder.objects.create(
+            buyer=user,
             full_name=full_name,
             email=email,
             mobile=mobile,
@@ -240,7 +245,7 @@ class CreateOrderAPIView(generics.CreateAPIView):
 
         for item in cart_items:
             CartOrderItem.objects.create(
-                order=item.order,
+                order=order,
                 product=item.product,
                 vendor=item.product.vendor,
                 qty=item.qty,
@@ -251,14 +256,14 @@ class CreateOrderAPIView(generics.CreateAPIView):
                 shipping_amount=item.shipping_amount,
                 service_fee=item.service_fee,
                 tax_fee=item.tax_fee,
-                initial_total=item.initial_total,
+                initial_total=item.total,
                 total=item.total,
             )
             total_shipping += Decimal(item.shipping_amount)
             total_tax += Decimal(item.tax_fee)
             total_service_fee += Decimal(item.service_fee)
             total_sub_total += Decimal(item.sub_total)
-            total_initial_total += Decimal(item.initial_total)
+            total_initial_total += Decimal(item.total)
             total += Decimal(item.total)
 
             order.vendor.add(item.product.vendor)

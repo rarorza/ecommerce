@@ -9,6 +9,7 @@ import GenarateCartID from '../../utils/plugins/GenerateCartID'
 import { ICart } from '../../shared/cart.interface'
 import { IProduct } from '../../shared/product.interface'
 import GetUserCountry from '../../utils/plugins/GetUserCountry'
+import apiInstace from '../../utils/axios'
 
 interface CartTotalProperties {
   shipping: number
@@ -194,8 +195,38 @@ function Cart() {
     }
   }
 
-  const handleCheckout = () => {
-    console.log('order')
+  const handleCheckout = async () => {
+    if (
+      !fullName ||
+      !email ||
+      !mobile ||
+      !address ||
+      !city ||
+      !state ||
+      !country
+    ) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing fields!',
+        text: 'All fields are required before checkout.',
+      })
+    }
+    const formData = new FormData()
+    const data = JSON.stringify({
+      full_name: fullName,
+      email: email,
+      mobile: mobile,
+      address: address,
+      city: city,
+      state: state,
+      country: country,
+      cart_id: cartId,
+      user_id: userData ? userData.user_id : 0,
+    })
+
+    formData.append('data', data)
+
+    await apiInstace.post('create-order/', formData)
   }
 
   return (

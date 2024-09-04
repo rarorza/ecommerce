@@ -30,4 +30,5 @@ urlpatterns = [
         "cart-delete/<str:cart_id>/<int:item_id>/",
         store_views.CartItemDeleteAPIView.as_view(),
     ),
+    path("create-order/", store_views.CreateOrderAPIView.as_view()),
 ]
