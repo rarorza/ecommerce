@@ -5,7 +5,6 @@ import GetUserCountry from '../../utils/plugins/GetUserCountry'
 import GetUserData from '../../utils/plugins/GetUserData'
 import GenerateCartID from '../../utils/plugins/GenerateCartID'
 import Swal from 'sweetalert2'
-import { get } from 'lodash'
 import { IProduct } from '../../shared/product.interface'
 
 interface ICategory {
@@ -88,12 +87,12 @@ function Products() {
   ) => {
     try {
       const formData = new FormData()
-      formData.append('product_id', productId.toString())
+      formData.append('product_id', productId)
       formData.append('user_id', userData.user_id)
-      formData.append('qty', qtyValue.toString())
-      formData.append('price', price.toString())
-      formData.append('shipping_amount', shippingAmount.toString())
-      formData.append('country', get(userAddress, 'country', ''))
+      formData.append('qty', qtyValue)
+      formData.append('price', price)
+      formData.append('shipping_amount', shippingAmount)
+      formData.append('country', userAddress)
       formData.append('size', sizeValue)
       formData.append('color', colorValue)
       formData.append('cart_id', cartID)

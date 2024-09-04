@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import Swal from 'sweetalert2'
+import { get } from 'lodash'
 
 import apiInstance from '../../utils/axios'
 import GetUserData from '../../utils/plugins/GetUserData'
 import GenarateCartID from '../../utils/plugins/GenerateCartID'
 import { ICart } from '../../shared/cart.interface'
-import { get } from 'lodash'
+import { IProduct } from '../../shared/product.interface'
+import GetUserCountry from '../../utils/plugins/GetUserCountry'
 
 interface CartTotalProperties {
   shipping: number
@@ -15,12 +18,28 @@ interface CartTotalProperties {
   total: number
 }
 
+interface IHashNumber {
+  [key: number]: number
+}
+
+const ToastNotification = Swal.mixin({
+  toast: true,
+  position: 'top',
+  showConfirmButton: false,
+  timer: 2000,
+  timerProgressBar: true,
+})
+
 function Cart() {
   const [cart, setCart] = useState<Array<ICart>>()
   const [cartTotal, setCartTotal] = useState<CartTotalProperties>()
+  const [productsQuantities, setProductsQuantities] = useState<IHashNumber>({})
+  const userAddress = GetUserCountry()
 
   const userData = GetUserData()
-  const cartId = GenarateCartID() || null
+  const cartId = GenarateCartID()
+
+  // Cart General
 
   const fetchCartData = (cartId: string, userId: number | null) => {
     const url = userId
@@ -53,6 +72,54 @@ function Cart() {
       }
     }
   }, [cartId])
+
+  // Quantity
+
+  const handleQtyChange = (e, product_id: number) => {
+    const quantity = e.target.value
+    setProductsQuantities((prevProductsQuantities) => ({
+      ...prevProductsQuantities,
+      [product_id]: quantity,
+    }))
+  }
+
+  const updateCart = async (product: IProduct, color: string, size: string) => {
+    const qtyValue = productsQuantities[product.id]
+
+    const formData = new FormData()
+    const data = JSON.stringify({
+      product_id: product.id,
+      user_id: userData?.user_id,
+      cart_id: cartId,
+      qty: qtyValue,
+      price: product.price,
+      shipping_amount: product.shipping_amount,
+      country: get(userAddress, 'contry', ''),
+      color: color,
+      size: size,
+    })
+
+    formData.append('data', data)
+    const response = await apiInstance.post('cart/', formData)
+
+    fetchCartData(cartId, userData?.user_id)
+    fetchCartTotal(cartId, userData?.user_id)
+
+    ToastNotification.fire({
+      icon: 'success',
+      title: response.data.message,
+    })
+  }
+
+  useEffect(() => {
+    const initialQuantities: IHashNumber = {}
+    if (cart !== undefined) {
+      cart.forEach((c) => {
+        initialQuantities[c.product.id] = c.qty
+      })
+      setProductsQuantities(initialQuantities)
+    }
+  }, [cart])
 
   return (
     <div>
@@ -142,11 +209,21 @@ function Cart() {
                                 <input
                                   type="number"
                                   className="form-control"
-                                  value={c.qty}
+                                  value={
+                                    productsQuantities[c.product.id] || c.qty
+                                  }
                                   min={1}
+                                  onChange={(e) =>
+                                    handleQtyChange(e, c.product.id)
+                                  }
                                 />
                               </div>
-                              <button className="ms-2 btn btn-primary">
+                              <button
+                                onClick={() =>
+                                  updateCart(c.product, c.color, c.size)
+                                }
+                                className="ms-2 btn btn-primary"
+                              >
                                 <i className="fas fa-rotate-right"></i>
                               </button>
                             </div>

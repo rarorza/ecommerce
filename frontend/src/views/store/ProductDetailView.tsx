@@ -63,15 +63,12 @@ function ProductDetailView() {
   const handleAddToCart = async () => {
     try {
       const formData = new FormData()
-      formData.append('product_id', product ? product.id.toString() : '')
-      formData.append('user_id', get(userData, 'user_id'.toString(), ''))
-      formData.append('qty', qtyValue.toString())
-      formData.append('price', get(product, 'price'.toString(), ''))
-      formData.append(
-        'shipping_amount',
-        get(product, 'shipping_amount'.toString(), ''),
-      )
-      formData.append('country', get(userAddress, 'country', ''))
+      formData.append('product_id', product.id)
+      formData.append('user_id', userData?.user_id)
+      formData.append('qty', qtyValue)
+      formData.append('price', product.price)
+      formData.append('shipping_amount', product.shipping_amount)
+      formData.append('country', userAddress.country)
       formData.append('size', sizeValue)
       formData.append('color', colorValue)
       formData.append('cart_id', cartID)

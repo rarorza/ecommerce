@@ -1,16 +1,13 @@
+import json
 from decimal import Decimal
 
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from store.models import Cart, CartOrder, CartOrderItem, Category, Product, Tax
-from store.serializers import (
-    CartOrderItemSerializer,
-    CartOrderSerializer,
-    CartSerializer,
-    CategorySerializer,
-    ProductSerializer,
-)
+from store.serializers import (CartOrderItemSerializer, CartOrderSerializer,
+                               CartSerializer, CategorySerializer,
+                               ProductSerializer)
 from userauth.models import User
 
 
@@ -41,7 +38,13 @@ class CartAPIView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
-        payload = request.data
+        # With the change to TypeScript, the FormData typing on the front-end started to require that the data be sent in a jsonstring.
+        # In order to receive the following format {'data': jsonstring}, it was necessary to implement this piece of code
+        key = list(request.data.keys())
+        if len(key) == 1:
+            payload = json.loads(request.data[key[0]])
+        else:
+            payload = request.data
 
         product_id = payload["product_id"]
         user_id = payload["user_id"]
