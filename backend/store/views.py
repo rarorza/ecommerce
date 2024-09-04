@@ -194,3 +194,83 @@ class CartItemDeleteAPIView(generics.DestroyAPIView):
             cart = Cart.objects.get(id=item_id, cart_id=cart_id)
 
         return cart
+
+
+class CreateOrderAPIView(generics.CreateAPIView):
+    serializer_class = CartOrderSerializer
+    queryset = CartOrder.objects.all()
+    permission_classes = [AllowAny]
+
+    def create(self, request):
+        payload = request.data
+
+        full_name = payload["full_name"]
+        email = payload["email"]
+        mobile = payload["mobile"]
+        address = payload["address"]
+        city = payload["city"]
+        state = payload["state"]
+        country = payload["country"]
+        cart_id = payload["cart_id"]
+        user_id = payload["user_id"]
+
+        if user_id:
+            user = User.objects.get(id=user_id)
+        else:
+            user = None
+
+        cart_items = Cart.objects.filter(cart_id=cart_id)
+
+        total_shipping = Decimal(0.00)
+        total_tax = Decimal(0.00)
+        total_service_fee = Decimal(0.00)
+        total_sub_total = Decimal(0.00)
+        total_initial_total = Decimal(0.00)
+        total = Decimal(0.00)
+
+        order = CartOrder.objects.create(
+            full_name=full_name,
+            email=email,
+            mobile=mobile,
+            address=address,
+            city=city,
+            state=state,
+            country=country,
+        )
+
+        for item in cart_items:
+            CartOrderItem.objects.create(
+                order=item.order,
+                product=item.product,
+                vendor=item.product.vendor,
+                qty=item.qty,
+                color=item.color,
+                size=item.size,
+                price=item.price,
+                sub_total=item.sub_total,
+                shipping_amount=item.shipping_amount,
+                service_fee=item.service_fee,
+                tax_fee=item.tax_fee,
+                initial_total=item.initial_total,
+                total=item.total,
+            )
+            total_shipping += Decimal(item.shipping_amount)
+            total_tax += Decimal(item.tax_fee)
+            total_service_fee += Decimal(item.service_fee)
+            total_sub_total += Decimal(item.sub_total)
+            total_initial_total += Decimal(item.initial_total)
+            total += Decimal(item.total)
+
+            order.vendor.add(item.product.vendor)
+
+        order.sub_total = total_sub_total
+        order.shipping_amount = total_shipping
+        order.tax_fee = total_tax
+        order.service_fee = total_service_fee
+        order.initial_total = total_initial_total
+        order.total = total
+        order.save()
+        return Response(
+            {"message": "Order Created Successfully", "order_oid": order.oid},
+            status=status.HTTP_201_CREATED,
+        )
