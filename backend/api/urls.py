@@ -31,4 +31,6 @@ urlpatterns = [
         store_views.CartItemDeleteAPIView.as_view(),
     ),
     path("create-order/", store_views.CreateOrderAPIView.as_view()),
+    path("create-order/", store_views.CreateOrderAPIView.as_view()),
+    path("checkout/<str:order_oid>/", store_views.CheckoutView.as_view()),
 ]

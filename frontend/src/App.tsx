@@ -11,6 +11,7 @@ import Header from './components/base/Header'
 import ProductsView from './views/store/ProductsView'
 import ProductDetailView from './views/store/ProductDetailView'
 import CartView from './views/store/CartView'
+import CheckoutView from './views/store/CheckoutView'
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/" element={<ProductsView />} />
         <Route path="/detail/:slug/" element={<ProductDetailView />} />
         <Route path="/cart" element={<CartView />} />
+        <Route path="/checkout/:order_oid" element={<CheckoutView />} />
       </Routes>
       <Footer />
     </BrowserRouter>

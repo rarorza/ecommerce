@@ -1,7 +1,20 @@
 from rest_framework import serializers
-from store.models import (Cart, CartOrder, CartOrderItem, Category, Color,
-                          Coupon, Gallery, Notification, Product, ProductFaq,
-                          Review, Size, Specification, Wishlist)
+from store.models import (
+    Cart,
+    CartOrder,
+    CartOrderItem,
+    Category,
+    Color,
+    Coupon,
+    Gallery,
+    Notification,
+    Product,
+    ProductFaq,
+    Review,
+    Size,
+    Specification,
+    Wishlist,
+)
 from vendor.models import Vendor
 
 
@@ -103,20 +116,6 @@ class CartSerializer(serializers.ModelSerializer):
             self.Meta.depth = 3
 
 
-class CartOrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CartOrder
-        fields = "__all__"
-
-    def __init__(self, *args, **kwargs):
-        super(CartOrderSerializer, self).__init__(*args, **kwargs)
-        request = self.context.get("request")
-        if request and request.method == "POST":
-            self.Meta.depth = 0
-        else:
-            self.Meta.depth = 3
-
-
 class CartOrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartOrderItem
@@ -124,6 +123,28 @@ class CartOrderItemSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(CartOrderItemSerializer, self).__init__(*args, **kwargs)
+        request = self.context.get("request")
+        if request and request.method == "POST":
+            self.Meta.depth = 0
+        else:
+            self.Meta.depth = 3
+
+
+class CartOrderSerializer(serializers.ModelSerializer):
+    order_item = CartOrderItemSerializer(many=True, read_only=True)
+
+    sub_total = serializers.FloatField()
+    service_fee = serializers.FloatField()
+    shipping_amount = serializers.FloatField()
+    tax_fee = serializers.FloatField()
+    total = serializers.FloatField()
+
+    class Meta:
+        model = CartOrder
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(CartOrderSerializer, self).__init__(*args, **kwargs)
         request = self.context.get("request")
         if request and request.method == "POST":
             self.Meta.depth = 0

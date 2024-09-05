@@ -5,9 +5,13 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from store.models import Cart, CartOrder, CartOrderItem, Category, Product, Tax
-from store.serializers import (CartOrderItemSerializer, CartOrderSerializer,
-                               CartSerializer, CategorySerializer,
-                               ProductSerializer)
+from store.serializers import (
+    CartOrderItemSerializer,
+    CartOrderSerializer,
+    CartSerializer,
+    CategorySerializer,
+    ProductSerializer,
+)
 from userauth.models import User
 
 
@@ -168,8 +172,8 @@ class CartDetailView(generics.RetrieveAPIView):
             total += float(cart_item.total)
 
         data = {
-            "shipping": total_shipping,
-            "tax": total_tax,
+            "shipping_amount": total_shipping,
+            "tax_fee": total_tax,
             "service_fee": total_service_fee,
             "sub_total": total_sub_total,
             "total": total,
@@ -279,3 +283,13 @@ class CreateOrderAPIView(generics.CreateAPIView):
             {"message": "Order Created Successfully", "order_oid": order.oid},
             status=status.HTTP_201_CREATED,
         )
+
+
+class CheckoutView(generics.RetrieveAPIView):
+    serializer_class = CartOrderSerializer
+    lookup_field = "order_oid"
+
+    def get_object(self):
+        order_oid = self.kwargs["order_oid"]
+        order = CartOrder.objects.get(oid=order_oid)
+        return order

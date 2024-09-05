@@ -10,10 +10,12 @@ import { ICart } from '../../shared/cart.interface'
 import { IProduct } from '../../shared/product.interface'
 import GetUserCountry from '../../utils/plugins/GetUserCountry'
 import apiInstace from '../../utils/axios'
+import { useNavigate } from 'react-router-dom'
+import CartSummary from '../../components/CartSummary'
 
-interface CartTotalProperties {
-  shipping: number
-  tax: number
+export interface CartTotalProperties {
+  shipping_amount: number
+  tax_fee: number
   service_fee: number
   sub_total: number
   total: number
@@ -48,6 +50,8 @@ function Cart() {
   const [state, setState] = useState('')
   const [country, setCountry] = useState('')
 
+  const navigate = useNavigate()
+
   // Cart General
 
   const fetchCartData = (cartId: string, userId: number | null) => {
@@ -70,6 +74,7 @@ function Cart() {
     try {
       apiInstance.get(url).then((res) => {
         setCartTotal(res.data)
+        console.log(res.data)
       })
     } catch (error) {
       console.log(error)
@@ -210,6 +215,7 @@ function Cart() {
         title: 'Missing fields!',
         text: 'All fields are required before checkout.',
       })
+      return
     }
     const formData = new FormData()
     const data = JSON.stringify({
@@ -226,7 +232,12 @@ function Cart() {
 
     formData.append('data', data)
 
-    await apiInstace.post('create-order/', formData)
+    try {
+      const response = await apiInstace.post('create-order/', formData)
+      navigate(`/checkout/${response.data.order_oid}`)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -246,7 +257,7 @@ function Cart() {
                               className="bg-image ripple rounded-5 mb-4 overflow-hidden d-block"
                               data-ripple-color="light"
                             >
-                              <Link to="">
+                              <Link to={`/detail/${c.product?.slug}`}>
                                 <img
                                   src={c.product?.image}
                                   className="w-100"
@@ -273,8 +284,11 @@ function Cart() {
                             </div>
                           </div>
                           <div className="col-md-8 mb-4 mb-md-0">
-                            <Link to={null} className="fw-bold text-dark mb-4">
-                              {c?.product?.title}
+                            <Link
+                              to={`/detail/${c.product?.slug}`}
+                              className="fw-bold text-dark mb-4"
+                            >
+                              {c.product?.title}
                             </Link>
                             {c.size !== 'No Size' && (
                               <p className="mb-0">
@@ -509,28 +523,7 @@ function Cart() {
                   <div className="col-lg-4 mb-4 mb-md-0">
                     {/* Section: Summary */}
                     <section className="shadow-4 p-4 rounded-5 mb-4">
-                      <h5 className="mb-3">Cart Summary</h5>
-                      <div className="d-flex justify-content-between mb-3">
-                        <span>Subtotal </span>
-                        <span>${cartTotal?.sub_total.toFixed(2)}</span>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                        <span>Shipping </span>
-                        <span>${cartTotal?.shipping.toFixed(2)}</span>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                        <span>Tax </span>
-                        <span>${cartTotal?.tax.toFixed(2)}</span>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                        <span>Servive Fee </span>
-                        <span>${cartTotal?.service_fee.toFixed(2)}</span>
-                      </div>
-                      <hr className="my-4" />
-                      <div className="d-flex justify-content-between fw-bold mb-5">
-                        <span>Total </span>
-                        <span>${cartTotal?.total.toFixed(2)}</span>
-                      </div>
+                      {cartTotal && <CartSummary cartTotal={cartTotal} />}
                       <button
                         onClick={handleCheckout}
                         className="btn btn-primary btn-rounded w-100"
