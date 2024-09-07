@@ -6,21 +6,14 @@ import { get } from 'lodash'
 import apiInstance from '../../utils/axios'
 import GetUserData from '../../utils/plugins/GetUserData'
 import GenarateCartID from '../../utils/plugins/GenerateCartID'
-import { ICart } from '../../shared/cart.interface'
+import { ICart, CartTotalProperties } from '../../shared/cart.interface'
 import { IProduct } from '../../shared/product.interface'
 import GetUserCountry from '../../utils/plugins/GetUserCountry'
 import apiInstace from '../../utils/axios'
 import { useNavigate } from 'react-router-dom'
 import CartSummary from '../../components/CartSummary'
 
-export interface CartTotalProperties {
-  shipping_amount: number
-  tax_fee: number
-  service_fee: number
-  sub_total: number
-  total: number
-  saved: number | null
-}
+
 
 interface IHashNumber {
   [key: number]: number

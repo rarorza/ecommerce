@@ -5,7 +5,7 @@ import Swal from 'sweetalert2'
 import CartSummary from '../../components/CartSummary'
 import apiInstace from '../../utils/axios'
 import { IOrder } from '../../shared/order.interface'
-import { CartTotalProperties } from './CartView'
+import { CartTotalProperties } from '../../shared/cart.interface'
 import { AxiosError } from 'axios'
 
 function CheckoutView() {
