@@ -138,6 +138,7 @@ class CartOrderSerializer(serializers.ModelSerializer):
     shipping_amount = serializers.FloatField()
     tax_fee = serializers.FloatField()
     total = serializers.FloatField()
+    saved = serializers.FloatField()
 
     class Meta:
         model = CartOrder

@@ -4,12 +4,13 @@ from decimal import Decimal
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from store.models import Cart, CartOrder, CartOrderItem, Category, Product, Tax
+from store.models import Cart, CartOrder, CartOrderItem, Category, Coupon, Product, Tax
 from store.serializers import (
     CartOrderItemSerializer,
     CartOrderSerializer,
     CartSerializer,
     CategorySerializer,
+    CouponSerializer,
     ProductSerializer,
 )
 from userauth.models import User
@@ -288,8 +289,68 @@ class CreateOrderAPIView(generics.CreateAPIView):
 class CheckoutView(generics.RetrieveAPIView):
     serializer_class = CartOrderSerializer
     lookup_field = "order_oid"
+    permission_classes = [AllowAny]
 
     def get_object(self):
         order_oid = self.kwargs["order_oid"]
         order = CartOrder.objects.get(oid=order_oid)
         return order
+
+
+class CouponAPIView(generics.CreateAPIView):
+    serializer_class = CouponSerializer
+    queryset = Coupon.objects.all()
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        key = list(request.data.keys())
+        if len(key) == 1:
+            payload = json.loads(request.data[key[0]])
+        else:
+            payload = request.data
+
+        order_oid = payload["order_oid"]
+        coupon_code = payload["coupon_code"]
+
+        order = CartOrder.objects.get(oid=order_oid)
+        coupon = Coupon.objects.filter(code=coupon_code).first()
+
+        if coupon:
+            order_items = CartOrderItem.objects.filter(
+                order=order, vendor=coupon.vendor
+            )
+            if order_items.exists():
+                total_discount = 0
+                for item in order_items:
+                    if coupon not in item.coupon.all():
+                        discount = item.total * coupon.discount / 100
+
+                        item.total -= discount
+                        item.sub_total -= discount
+                        item.coupon.add(coupon)
+                        item.saved += discount
+
+                        total_discount += discount
+
+                        item.save()
+
+                order.total -= total_discount
+                order.sub_total -= total_discount
+                order.saved += total_discount
+
+                order.save()
+
+                return Response(
+                    {"message": "Coupon Activated", "icon": "success"},
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {"message": "Order Items Do Not Exist", "icon": "error"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+        else:
+            return Response(
+                {"message": "Coupon Does Not Exist", "icon": "error"},
+                status=status.HTTP_404_NOT_FOUND,
+            )

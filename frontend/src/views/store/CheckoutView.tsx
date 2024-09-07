@@ -1,27 +1,77 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 import CartSummary from '../../components/CartSummary'
 import apiInstace from '../../utils/axios'
 import { IOrder } from '../../shared/order.interface'
 import { CartTotalProperties } from './CartView'
+import { AxiosError } from 'axios'
 
 function CheckoutView() {
   const [order, setOrder] = useState<IOrder>()
   const [cartTotal, setCartTotal] = useState<CartTotalProperties>()
+  const [couponCode, setCouponCode] = useState('')
 
   const order_oid = useParams().order_oid
-
-  useEffect(() => {
-    apiInstace.get(`checkout/${order_oid}`).then((res) => {
+  const getCheckoutData = async (oid: string) => {
+    apiInstace.get(`checkout/${oid}`).then((res) => {
       setOrder(res.data)
       setCartTotal(() => {
-        const { shipping_amount, tax_fee, service_fee, sub_total, total } =
-          res.data
-        return { shipping_amount, tax_fee, service_fee, sub_total, total }
+        const {
+          shipping_amount,
+          tax_fee,
+          service_fee,
+          sub_total,
+          total,
+          saved,
+        } = res.data
+        return {
+          shipping_amount,
+          tax_fee,
+          service_fee,
+          sub_total,
+          total,
+          saved,
+        }
       })
     })
+  }
+  useEffect(() => {
+    if (order_oid) {
+      getCheckoutData(order_oid)
+    }
   }, [order_oid])
+
+  const handleCoupon = async () => {
+    const data = JSON.stringify({
+      coupon_code: couponCode,
+      order_oid: order_oid,
+    })
+    const formData = new FormData()
+    formData.append('data', data)
+
+    try {
+      const response = await apiInstace.post(`coupon/`, formData)
+      Swal.fire({
+        icon: response.data.icon,
+        title: response.data.message,
+      })
+      if (order_oid) getCheckoutData(order_oid)
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        Swal.fire({
+          icon: error.response?.data.icon,
+          title: error.response?.data.message,
+        })
+        return
+      }
+      Swal.fire({
+        icon: 'error',
+        title: 'Something went wrong',
+      })
+    }
+  }
 
   return (
     <>
@@ -177,19 +227,24 @@ function CheckoutView() {
                 <div className="col-lg-4 mb-4 mb-md-0">
                   {/* Section: Summary */}
                   <section className="shadow-4 p-4 rounded-5 mb-4">
-                    {cartTotal && <CartSummary cartTotal={cartTotal} />}
+                    {cartTotal && (
+                      <CartSummary cartTotal={cartTotal} isCheckout={true} />
+                    )}
 
                     <div className="shadow p-3 d-flex mt-4 mb-4">
                       <input
-                        readOnly
                         name="couponCode"
                         type="text"
                         className="form-control"
                         style={{ border: 'dashed 1px gray' }}
                         placeholder="Enter Coupon Code"
                         id=""
+                        onChange={(e) => setCouponCode(e.target.value)}
                       />
-                      <button className="btn btn-success ms-1">
+                      <button
+                        className="btn btn-success ms-1"
+                        onClick={handleCoupon}
+                      >
                         <i className="fas fa-check-circle"></i>
                       </button>
                     </div>
