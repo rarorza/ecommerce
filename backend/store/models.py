@@ -197,6 +197,9 @@ class CartOrder(models.Model):
     state = models.CharField(max_length=100, null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
 
+    # Payments
+    stripe_session_id = models.CharField(max_length=1000, null=True, blank=True)
+
     def order_item(self):
         return CartOrderItem.objects.filter(order=self)
 

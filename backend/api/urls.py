@@ -4,6 +4,7 @@ from store import views as store_views
 from userauth import views as userauth_views
 
 urlpatterns = [
+    # Authentification
     path("user/token/", userauth_views.MyTokenObtainPairView.as_view()),
     path("user/token/refresh/", TokenRefreshView.as_view()),
     path("user/register/", userauth_views.RegisterView.as_view()),
@@ -12,6 +13,7 @@ urlpatterns = [
         userauth_views.PasswordResetAndEmailVerify.as_view(),
     ),
     path("user/password-change/", userauth_views.PasswordChangeView.as_view()),
+    # Store
     path("categories/", store_views.CategoryListAPIView.as_view()),
     path("products/", store_views.ProductListAPIView.as_view()),
     path("product/<slug>", store_views.ProductAPIView.as_view()),
@@ -34,4 +36,6 @@ urlpatterns = [
     path("create-order/", store_views.CreateOrderAPIView.as_view()),
     path("checkout/<str:order_oid>/", store_views.CheckoutView.as_view()),
     path("coupon/", store_views.CouponAPIView.as_view()),
+    # Payment
+    path("checkout-stripe/<str:order_oid>/", store_views.CheckoutStripeView.as_view()),
 ]
