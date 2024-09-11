@@ -1,9 +1,9 @@
 import json
 import os
 from decimal import Decimal
-from pathlib import Path
 
 import stripe
+from django.conf import settings
 from dotenv import load_dotenv
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -19,10 +19,7 @@ from store.serializers import (
 )
 from userauth.models import User
 
-DOTENV_PATH = Path(__file__).parent.parent.parent / ".env"
-load_dotenv(dotenv_path=DOTENV_PATH, override=True)
-
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "change-me")
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class CategoryListAPIView(generics.ListAPIView):

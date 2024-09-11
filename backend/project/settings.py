@@ -10,18 +10,24 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from datetime import timedelta
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+DOTENV_PATH = Path(__file__).parent.parent.parent / ".env"
+load_dotenv(dotenv_path=DOTENV_PATH, override=True)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-z3q8r5f=&yu+v6fz!lx#qlo20p0-zc95@yjb0umrcs1rju5o1i"
+SECRET_KEY = os.getenv("SECRET_KEY", "change-me")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -142,6 +148,11 @@ MEDIA_ROOT = BASE_DIR / "media"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Stripe
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "change-me")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "change-me")
+
 
 # Simple JWT
 SIMPLE_JWT = {
