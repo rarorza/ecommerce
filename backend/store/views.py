@@ -19,7 +19,7 @@ from store.serializers import (
 )
 from userauth.models import User
 
-DOTENV_PATH = Path(__file__).parent.parent / ".env"
+DOTENV_PATH = Path(__file__).parent.parent.parent / ".env"
 load_dotenv(dotenv_path=DOTENV_PATH, override=True)
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "change-me")
@@ -365,48 +365,6 @@ class CouponAPIView(generics.CreateAPIView):
             )
 
 
-# class CheckoutStripeView(generics.CreateAPIView):
-#     serializer_class = CartOrderSerializer
-#     permission_classes = [AllowAny]
-#     lookup_url_kwarg = "order_oid"
-#     queryset = CartOrder.objects.all()
-#
-#     def create(self, request, *args, **kwargs):
-#         order_oid = self.kwargs["order_oid"]
-#         order = CartOrder.objects.get(oid=order_oid)
-#
-#         if not order:
-#             return Response(
-#                 {"message": "Order Not Fond"}, status=status.HTTP_404_NOT_FOUND
-#             )
-#         try:
-#             checkout_session = stripe.checkout.Session.create(
-#                 customer_email=order.email,
-#                 payment_method_types=["card"],
-#                 line_items=[
-#                     {
-#                         "price_data": {
-#                             "currency": "usd",
-#                             "product_data": {"name": order.full_name},
-#                             "unit_amount": int(order.total * 100),
-#                         },
-#                         "quantity": 1,
-#                     }
-#                 ],
-#                 mode="payment",
-#                 success_url=f"http://localhost:5173/payment-success/{order.oid}?session_id={CHECKOUT_SESSION_ID}",
-#                 cancel_url=f"http://localhost:5173/payment-failed/?session_id={CHECKOUT_SESSION_ID}",
-#             )
-#             order.stripe_session_id = checkout_session.id
-#             order.save()
-#             return redirect(checkout_session.url)
-#         except stripe.error.StripeError as e:
-#             order = super().create(request, *args, **kwargs)
-#             return Response(
-#                 {
-#                     "error": f"Something went wrong while creating the checkout session: {str(e)}"
-#                 }
-#             )
 class CheckoutStripeView(generics.CreateAPIView):
     serializer_class = CartOrderSerializer
     permission_classes = [AllowAny]
