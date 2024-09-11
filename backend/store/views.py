@@ -408,3 +408,45 @@ class CheckoutStripeView(generics.CreateAPIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+class PaymentSuccessView(generics.CreateAPIView):
+    serializer_class = CartOrderSerializer
+    permission_classes = [AllowAny]
+    queryset = CartOrder.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        payload = request.data
+
+        order_oid = payload["order_oid"]
+        session_id = payload["session_id"]
+
+        order = CartOrder.objects.get(oid=order_oid)
+        # order_items = CartOrderItem.objects.filter(order=order)
+
+        if session_id != "null":
+            session = stripe.checkout.Session.retrive(session_id)
+
+            if session.payment_status == "paid":
+                if order.payment_status == "processing":
+                    order.payment_status = "paid"
+                    order.save()
+                    return Response(
+                        {"message": "Payment successfully"}, status=status.HTTP_200_OK
+                    )
+                return Response({"message": "Already paid"}, status=status.HTTP_200_OK)
+            elif session.payment_status == "unpaid":
+                return Response(
+                    {"message": "Your invoice is unpaid"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            elif session.payment_status == "cancelled":
+                return Response(
+                    {"message": "Your invoice was cancelled"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+        return Response(
+            {"message": "An error occured, try again..."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
