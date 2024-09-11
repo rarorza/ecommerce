@@ -398,7 +398,6 @@ class CheckoutStripeView(generics.CreateAPIView):
             order.stripe_session_id = checkout_session.id
             order.save()
 
-            # Wrap the redirect response in a DRF Response object
             return Response(
                 {"redirect_url": checkout_session.url}, status=status.HTTP_200_OK
             )

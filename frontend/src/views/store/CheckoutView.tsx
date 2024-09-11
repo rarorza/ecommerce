@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Swal from 'sweetalert2'
 
 import CartSummary from '../../components/CartSummary'
@@ -12,6 +12,8 @@ function CheckoutView() {
   const [order, setOrder] = useState<IOrder>()
   const [cartTotal, setCartTotal] = useState<CartTotalProperties>()
   const [couponCode, setCouponCode] = useState('')
+  const [paymentLoading, setPaymentLoading] = useState(false)
+  const navigate = useNavigate()
 
   const order_oid = useParams().order_oid
   const getCheckoutData = async (oid: string) => {
@@ -70,6 +72,21 @@ function CheckoutView() {
         icon: 'error',
         title: 'Something went wrong',
       })
+    }
+  }
+
+  const payWithStripe = async () => {
+    // test card 4242424242424242
+    setPaymentLoading(true)
+    try {
+      const res = await apiInstace.post(`checkout-stripe/${order?.oid}/`)
+      console.log(res.data)
+      if (res.data.redirect_url) {
+        window.location.href = `${res.data.redirect_url}`
+      }
+      setPaymentLoading(false)
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -249,18 +266,24 @@ function CheckoutView() {
                       </button>
                     </div>
 
-                    <form
-                      action={`http://127.0.0.1:8000/stripe-checkout/ORDER_ID/`}
-                      method="POST"
-                    >
+                    {paymentLoading ? (
                       <button
-                        type="submit"
+                        onClick={payWithStripe}
+                        disabled
+                        className="btn btn-primary btn-rounded w-100 mt-2"
+                        style={{ backgroundColor: '#635BFF' }}
+                      >
+                        Processing... <i className="fas fa-spinner fa-spin"></i>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={payWithStripe}
                         className="btn btn-primary btn-rounded w-100 mt-2"
                         style={{ backgroundColor: '#635BFF' }}
                       >
                         Pay Now (Stripe)
                       </button>
-                    </form>
+                    )}
 
                     {/* <PayPalScriptProvider options={initialOptions}> */}
                     {/*   <PayPalButtons */}
