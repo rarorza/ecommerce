@@ -1,15 +1,25 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { get } from 'lodash'
+import Swal from 'sweetalert2'
+
 import apiInstance from '../../utils/axios'
 import GetUserCountry from '../../utils/plugins/GetUserCountry.jsx'
 import GetUserData from '../../utils/plugins/GetUserData.jsx'
 import GenerateCartID from '../../utils/plugins/GenerateCartID.js'
 import { IProduct } from '../../shared/product.interface.ts'
-import { get } from 'lodash'
 import { IGallery } from '../../shared/gallery.interface.ts'
 import { ISpecifications } from '../../shared/specifications.interface.ts'
 import { IColors } from '../../shared/colors.interface.ts'
 import { ISizes } from '../../shared/sizes.interface.ts'
+
+const ToastNotification = Swal.mixin({
+  toast: true,
+  position: 'top',
+  showConfirmButton: false,
+  timer: 2000,
+  timerProgressBar: true,
+})
 
 function ProductDetailView() {
   const [product, setProduct] = useState<IProduct>()
@@ -30,8 +40,9 @@ function ProductDetailView() {
 
   useEffect(() => {
     apiInstance.get(`product/${param.slug}`).then((res) => {
-      setProduct(res.data)
-      if (product) {
+      if (JSON.stringify(product) !== JSON.stringify(res.data)) {
+        // prevent infinite loop
+        setProduct(res.data)
         setSpecifications(res.data.specification)
         setGallery(res.data.gallery)
         setColors(res.data.color)
@@ -63,17 +74,25 @@ function ProductDetailView() {
   const handleAddToCart = async () => {
     try {
       const formData = new FormData()
-      formData.append('product_id', product.id)
-      formData.append('user_id', userData?.user_id)
-      formData.append('qty', qtyValue)
-      formData.append('price', product.price)
-      formData.append('shipping_amount', product.shipping_amount)
-      formData.append('country', userAddress.country)
-      formData.append('size', sizeValue)
-      formData.append('color', colorValue)
-      formData.append('cart_id', cartID)
+      console.log(userData)
+      const data = JSON.stringify({
+        product_id: product?.id,
+        user_id: userData?.user_id,
+        qty: qtyValue,
+        price: product?.price,
+        shipping_amount: product?.shipping_amount,
+        country: userAddress.country,
+        size: sizeValue,
+        color: colorValue,
+        cart_id: cartID,
+      })
+      formData.append('data', data)
+      const response = await apiInstance.post(`cart/`, formData)
 
-      await apiInstance.post(`cart/`, formData)
+      ToastNotification.fire({
+        icon: 'success',
+        title: response.data.message,
+      })
     } catch (error) {
       console.log('error', error)
     }

@@ -13,8 +13,6 @@ import apiInstace from '../../utils/axios'
 import { useNavigate } from 'react-router-dom'
 import CartSummary from '../../components/CartSummary'
 
-
-
 interface IHashNumber {
   [key: number]: number
 }
@@ -110,7 +108,7 @@ function Cart() {
       qty: qtyValue,
       price: product.price,
       shipping_amount: product.shipping_amount,
-      country: get(userAddress, 'contry', ''),
+      country: get(userAddress, 'country', ''),
       color: color,
       size: size,
     })

@@ -87,15 +87,18 @@ function Products() {
   ) => {
     try {
       const formData = new FormData()
-      formData.append('product_id', productId)
-      formData.append('user_id', userData.user_id)
-      formData.append('qty', qtyValue)
-      formData.append('price', price)
-      formData.append('shipping_amount', shippingAmount)
-      formData.append('country', userAddress)
-      formData.append('size', sizeValue)
-      formData.append('color', colorValue)
-      formData.append('cart_id', cartID)
+      const data = JSON.stringify({
+        product_id: productId,
+        user_id: userData ? userData.user_id : null,
+        qty: qtyValue,
+        price: price,
+        shipping_amount: shippingAmount,
+        country: userAddress.country,
+        size: sizeValue,
+        color: colorValue,
+        cart_id: cartID,
+      })
+      formData.append('data', data)
 
       const response = await apiInstance.post(`cart/`, formData)
 

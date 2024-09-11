@@ -61,7 +61,7 @@ class CartAPIView(generics.ListCreateAPIView):
             payload = request.data
 
         product_id = payload["product_id"]
-        user_id = payload["user_id"]
+        user_id = payload.get("user_id")
         qty = payload["qty"]
         price = payload["price"]
         shipping_amount = payload["shipping_amount"]
@@ -71,8 +71,8 @@ class CartAPIView(generics.ListCreateAPIView):
         cart_id = payload["cart_id"]
 
         product = Product.objects.get(id=product_id)
-        if user_id != "undefined":
-            user = User.objects.get(id=user_id)
+        if user_id != "undefined" or not user_id:
+            user = User.objects.filter(id=user_id).first()
         else:
             user = None
 
