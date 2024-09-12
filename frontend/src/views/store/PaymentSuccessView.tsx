@@ -2,22 +2,47 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { IOrder } from '../../shared/order.interface'
 import { getCheckoutData } from '../../utils/plugins/GetCheckoutData'
+import apiInstace from '../../utils/axios'
 
 export default function PaymentSuccessView() {
   const [order, setOrder] = useState<IOrder>()
-  // const [loading, setLoading] = useState(true)
+  const [status, setStatus] = useState('Verifying')
 
   const params = useParams()
-  const order_oid = params.order_oid
+  const order_oid = params?.order_oid
 
-  // const urlParam = new URLSearchParams(window.location.search)
-  // const sessionId = urlParam.get('session_id')
+  const urlParam = new URLSearchParams(window.location.search)
+  const sessionId = urlParam.get('session_id')
 
   useEffect(() => {
     if (order_oid) {
       getCheckoutData(order_oid, setOrder)
     }
   }, [order_oid])
+
+  useEffect(() => {
+    const formData = new FormData()
+    const data = JSON.stringify({
+      order_oid: order_oid,
+      session_id: sessionId,
+    })
+    formData.append('data', data)
+
+    try {
+      apiInstace.post(`payment-success/${order_oid}/`, formData).then((res) => {
+        const { message } = res.data
+        if (message === 'Payment successfull' || message === 'Already paid') {
+          setStatus('Payment Successfull')
+        }
+        if (message === 'Your invoice is unpaid') {
+          setStatus('Your invoice is unpaid')
+        }
+      })
+    } catch (error) {
+      console.log(error)
+      setStatus('An error occured, try again...')
+    }
+  }, [order_oid, sessionId])
 
   return (
     <>
@@ -41,38 +66,96 @@ export default function PaymentSuccessView() {
                   <div className="application_statics">
                     <div className="account_user_deails dashboard_page">
                       <div className="d-flex justify-content-center align-items-center">
-                        <div className="col-lg-12">
-                          <div className="border border-3 border-success" />
-                          <div className="card bg-white shadow p-5">
-                            <div className="mb-4 text-center">
-                              <i
-                                className="fas fa-check-circle text-success"
-                                style={{ fontSize: 100, color: 'green' }}
-                              />
-                            </div>
-                            <div className="text-center">
-                              <h1>Thank You !</h1>
-                              <p>
-                                Your checkout was successfull, we have sent the
-                                order detail to your email{' '}
-                              </p>
-                              <button
-                                className="btn btn-success mt-3"
-                                data-bs-toggle="modal"
-                                data-bs-target="#exampleModal"
-                              >
-                                View Order <i className="fas fa-eye" />{' '}
-                              </button>
-                              <a href="/" className="btn btn-primary mt-3 ms-2">
-                                Download Invoice{' '}
-                                <i className="fas fa-file-invoice" />{' '}
-                              </a>
-                              <a className="btn btn-secondary mt-3 ms-2">
-                                Go Home <i className="fas fa-fa-arrow-left" />{' '}
-                              </a>
+                        {status === 'Verifying' && (
+                          <div className="col-lg-12">
+                            <div className="border border-3 border-warning" />
+                            <div className="card bg-white shadow p-5">
+                              <div className="mb-4 text-center">
+                                <i
+                                  className="fas fa-spinner text-warning"
+                                  style={{ fontSize: 100, color: 'yellow' }}
+                                />
+                              </div>
+                              <div className="text-center">
+                                <h1>
+                                  Payment Verifying <i className=""></i>
+                                </h1>
+                                <p>
+                                  <b className="">
+                                    Please hold on, while we verify your
+                                    payment.
+                                  </b>
+                                  <br />
+                                  <b className="text-danger">
+                                    NOTE: Do not reload or leave the page
+                                  </b>
+                                </p>
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        )}
+
+                        {status === 'Payment Successfull' && (
+                          <div className="col-lg-12">
+                            <div className="border border-3 border-success" />
+                            <div className="card bg-white shadow p-5">
+                              <div className="mb-4 text-center">
+                                <i
+                                  className="fas fa-check-circle text-success"
+                                  style={{ fontSize: 100, color: 'green' }}
+                                />
+                              </div>
+                              <div className="text-center">
+                                <h1>Thank You !</h1>
+                                <p>
+                                  Your checkout was successfull, we have sent
+                                  the order detail to your email {order?.email}
+                                </p>
+                                <button
+                                  className="btn btn-success mt-3"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#exampleModal"
+                                >
+                                  View Order <i className="fas fa-eye" />{' '}
+                                </button>
+                                <a
+                                  href="/"
+                                  className="btn btn-primary mt-3 ms-2"
+                                >
+                                  Download Invoice{' '}
+                                  <i className="fas fa-file-invoice" />{' '}
+                                </a>
+                                <a className="btn btn-secondary mt-3 ms-2">
+                                  Go Home <i className="fas fa-fa-arrow-left" />{' '}
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {status === 'Your invoice is unpaid' && (
+                          <div className="col-lg-12">
+                            <div className="border border-3 border-danger" />
+                            <div className="card bg-white shadow p-5">
+                              <div className="mb-4 text-center">
+                                <i
+                                  className="fas fa-ban text-danger"
+                                  style={{ fontSize: 100, color: 'red' }}
+                                />
+                              </div>
+                              <div className="text-center">
+                                <h1>
+                                  Your invoice is unpaid <i className=""></i>
+                                </h1>
+                                <p>
+                                  <b className="text-danger">
+                                    Something whent wrong.
+                                  </b>
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

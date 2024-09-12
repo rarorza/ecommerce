@@ -416,19 +416,26 @@ class PaymentSuccessView(generics.CreateAPIView):
     queryset = CartOrder.objects.all()
 
     def create(self, request, *args, **kwargs):
-        payload = request.data
+        key = list(request.data.keys())
+        print(key)
+        if len(key) == 1:
+            payload = json.loads(request.data[key[0]])
+        else:
+            payload = request.data
 
-        order_oid = payload["order_oid"]
-        session_id = payload["session_id"]
+        print(payload, "**" * 100)
 
-        order = CartOrder.objects.get(oid=order_oid)
+        order_oid = payload.get("order_oid")
+        session_id = payload.get("session_id")
+
+        order = CartOrder.objects.filter(oid=order_oid).first()
         # order_items = CartOrderItem.objects.filter(order=order)
 
         if session_id != "null":
-            session = stripe.checkout.Session.retrive(session_id)
+            session = stripe.checkout.Session.retrieve(session_id)
 
             if session.payment_status == "paid":
-                if order.payment_status == "processing":
+                if order.payment_status == "pending":
                     order.payment_status = "paid"
                     order.save()
                     return Response(
