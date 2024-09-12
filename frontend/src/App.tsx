@@ -12,6 +12,7 @@ import ProductsView from './views/store/ProductsView'
 import ProductDetailView from './views/store/ProductDetailView'
 import CartView from './views/store/CartView'
 import CheckoutView from './views/store/CheckoutView'
+import PaymentSuccessView from './views/store/PaymentSuccessView'
 
 function App() {
   return (
@@ -30,6 +31,10 @@ function App() {
         <Route path="/detail/:slug/" element={<ProductDetailView />} />
         <Route path="/cart" element={<CartView />} />
         <Route path="/checkout/:order_oid" element={<CheckoutView />} />
+        <Route
+          path="/payment-success/:order_oid"
+          element={<PaymentSuccessView />}
+        />
       </Routes>
       <Footer />
     </BrowserRouter>

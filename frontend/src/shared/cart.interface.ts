@@ -20,5 +20,5 @@ export interface CartTotalProperties {
   service_fee: number
   sub_total: number
   total: number
-  saved: number | null
+  saved: number | string | null
 }

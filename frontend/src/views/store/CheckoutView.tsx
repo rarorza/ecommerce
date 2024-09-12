@@ -7,41 +7,20 @@ import apiInstace from '../../utils/axios'
 import { IOrder } from '../../shared/order.interface'
 import { CartTotalProperties } from '../../shared/cart.interface'
 import { AxiosError } from 'axios'
+import { getCheckoutData } from '../../utils/plugins/GetCheckoutData'
 
 function CheckoutView() {
   const [order, setOrder] = useState<IOrder>()
   const [cartTotal, setCartTotal] = useState<CartTotalProperties>()
   const [couponCode, setCouponCode] = useState('')
   const [paymentLoading, setPaymentLoading] = useState(false)
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   const order_oid = useParams().order_oid
-  const getCheckoutData = async (oid: string) => {
-    apiInstace.get(`checkout/${oid}`).then((res) => {
-      setOrder(res.data)
-      setCartTotal(() => {
-        const {
-          shipping_amount,
-          tax_fee,
-          service_fee,
-          sub_total,
-          total,
-          saved,
-        } = res.data
-        return {
-          shipping_amount,
-          tax_fee,
-          service_fee,
-          sub_total,
-          total,
-          saved,
-        }
-      })
-    })
-  }
+
   useEffect(() => {
     if (order_oid) {
-      getCheckoutData(order_oid)
+      getCheckoutData(order_oid, setOrder, setCartTotal)
     }
   }, [order_oid])
 
