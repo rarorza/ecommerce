@@ -1,25 +1,31 @@
 import json
-import os
 from decimal import Decimal
 
 import stripe
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from dotenv import load_dotenv
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from store.models import Cart, CartOrder, CartOrderItem, Category, Coupon, Product, Tax
-from store.serializers import (
-    CartOrderItemSerializer,
-    CartOrderSerializer,
-    CartSerializer,
-    CategorySerializer,
-    CouponSerializer,
-    ProductSerializer,
-)
+from store.models import (Cart, CartOrder, CartOrderItem, Category, Coupon,
+                          Notification, Product, Tax)
+from store.serializers import (CartOrderItemSerializer, CartOrderSerializer,
+                               CartSerializer, CategorySerializer,
+                               CouponSerializer, ProductSerializer)
 from userauth.models import User
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+def send_notification(user=None, vendor=None, order=None, order_item=None):
+    Notification.objects.create(
+        user=user,
+        vendor=vendor,
+        order=order,
+        order_item=order_item,
+    )
 
 
 class CategoryListAPIView(generics.ListAPIView):
@@ -423,13 +429,11 @@ class PaymentSuccessView(generics.CreateAPIView):
         else:
             payload = request.data
 
-        print(payload, "**" * 100)
-
         order_oid = payload.get("order_oid")
         session_id = payload.get("session_id")
 
         order = CartOrder.objects.filter(oid=order_oid).first()
-        # order_items = CartOrderItem.objects.filter(order=order)
+        order_items = CartOrderItem.objects.filter(order=order)
 
         if session_id != "null":
             session = stripe.checkout.Session.retrieve(session_id)
@@ -438,6 +442,53 @@ class PaymentSuccessView(generics.CreateAPIView):
                 if order.payment_status == "pending":
                     order.payment_status = "paid"
                     order.save()
+
+                    # Send notification and email to buyer and vendor
+                    if order.buyer:
+                        send_notification(user=order.buyer, order=order)
+
+                    context = {"order": order, "order_items": order_items}
+                    subject = "Order Placed Succesfully"
+                    text_body = render_to_string(
+                        "email/customer_order_confirmation.txt", context
+                    )
+                    html_body = render_to_string(
+                        "email/customer_order_confirmation.html", context
+                    )
+                    msg = EmailMultiAlternatives(
+                        subject=subject,
+                        from_email=settings.FROM_EMAIL,
+                        to=[order.email],
+                        body=text_body,
+                    )
+                    msg.attach_alternative(html_body, "text/html")
+                    msg.send()
+
+                    # Send notification and email to vendor
+                    for item in order_items:
+                        send_notification(
+                            vendor=item.vendor, order=order, order_item=item
+                        )
+
+                        items_from_vendor = order_items.filter(vendor=item.vendor)
+
+                        context = {
+                            "order": order,
+                            "order_items": items_from_vendor,
+                            "vendor": item.vendor,
+                        }
+                        subject = "New Sale!"
+                        text_body = render_to_string("email/vendor_sale.txt", context)
+                        html_body = render_to_string("email/vendor_sale.html", context)
+                        msg = EmailMultiAlternatives(
+                            subject=subject,
+                            from_email=settings.FROM_EMAIL,
+                            to=[item.vendor.user.email],
+                            body=text_body,
+                        )
+                        msg.attach_alternative(html_body, "text/html")
+                        msg.send()
+
                     return Response(
                         {"message": "Payment successfully"}, status=status.HTTP_200_OK
                     )

@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "drf_yasg",
     "corsheaders",
+    "anymail",
 ]
 
 MIDDLEWARE = [
@@ -76,7 +77,7 @@ ROOT_URLCONF = "project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -153,6 +154,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "change-me")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "change-me")
 
+# Email sender - ESPs supports https://anymail.dev/en/stable/
+FROM_EMAIL = os.getenv("FROM_EMAIL", "change-me")
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+MAILGUN_API_KEY = os.getenv("MAILGUN_API_KEY", "change-me")
+MAILGUN_SENDER_DOMAIN = os.getenv("MAILGUN_SENDER_DOMAIN", "change-me")
+ANYMAIL = {
+    MAILGUN_API_KEY: MAILGUN_API_KEY,
+    MAILGUN_SENDER_DOMAIN: MAILGUN_SENDER_DOMAIN,
+}
 
 # Simple JWT
 SIMPLE_JWT = {
