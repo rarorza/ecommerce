@@ -5,8 +5,8 @@ import { IUserDataJwt } from '../shared/user.interface'
 interface IAuthStore {
   allUserData: IUserDataJwt | null
   loading: boolean
-  user: () => IUserDataJwt
-  setUser: (user: IUserDataJwt) => void
+  user: () => IUserDataJwt | null
+  setUser: (user: IUserDataJwt | null) => void
   setLoading: (loading: boolean) => void
   isLoggedIn: () => boolean
 }

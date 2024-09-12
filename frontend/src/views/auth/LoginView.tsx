@@ -12,6 +12,7 @@ function LoginView() {
 
   useEffect(() => {
     if (isLoggedIn()) {
+      console.log('islogin', isLoggedIn())
       navigate('/')
     }
   }, [isLoggedIn, navigate])

@@ -103,7 +103,7 @@ export const register = async (
 export const logout = (): void => {
   Cookies.remove('access_token')
   Cookies.remove('refresh_token')
-  useAuthStore.getState().setUser({ user_id: null, username: null })
+  useAuthStore.getState().setUser(null)
 }
 
 export const setUser = async (): Promise<void> => {
