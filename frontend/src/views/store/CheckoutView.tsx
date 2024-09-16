@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import {
+  PayPalScriptProvider,
+  PayPalButtons,
+  PayPalButtonsComponentProps,
+} from '@paypal/react-paypal-js'
 
 import CartSummary from '../../components/CartSummary'
 import apiInstace from '../../utils/axios'
@@ -8,13 +13,15 @@ import { IOrder } from '../../shared/order.interface'
 import { CartTotalProperties } from '../../shared/cart.interface'
 import { AxiosError } from 'axios'
 import { getCheckoutData } from '../../utils/plugins/GetCheckoutData'
+import { PAYPAL_CLIENT_ID } from '../../utils/constants'
+
 
 function CheckoutView() {
   const [order, setOrder] = useState<IOrder>()
   const [cartTotal, setCartTotal] = useState<CartTotalProperties>()
   const [couponCode, setCouponCode] = useState('')
   const [paymentLoading, setPaymentLoading] = useState(false)
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
 
   const order_oid = useParams().order_oid
 
@@ -38,7 +45,7 @@ function CheckoutView() {
         icon: response.data.icon,
         title: response.data.message,
       })
-      if (order_oid) getCheckoutData(order_oid)
+      if (order_oid) getCheckoutData(order_oid, setOrder)
     } catch (error) {
       if (error instanceof AxiosError) {
         Swal.fire({
@@ -54,6 +61,8 @@ function CheckoutView() {
     }
   }
 
+  // Stripe
+
   const payWithStripe = async () => {
     // test card 4242424242424242
     setPaymentLoading(true)
@@ -67,6 +76,41 @@ function CheckoutView() {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  // Paypal
+
+  const initialOptions = {
+    clientId: PAYPAL_CLIENT_ID,
+    currency: 'USD',
+    intent: 'capture',
+  }
+
+  const paypalOnAprover: PayPalButtonsComponentProps['onApprove'] = (data, actions) => {
+    return actions.order.capture().then((details) => {
+      // const name = details?.payment_source?.paypal?.name?.given_name
+      const status = details.status
+      const payapl_order_id = data.orderID
+
+      if (status === 'COMPLETED') {
+        navigate(
+          `/payment-success/${order?.oid}/?payapl_order_id=${payapl_order_id}`,
+        )
+      }
+    })
+  }
+
+  const paypalCreateOrder: PayPalButtonsComponentProps['createOrder'] = (data, actions) => {
+    return actions.order.create({
+      purchase_units: [
+        {
+          amount: {
+            currency_code: 'USD',
+            value: order?.total.toString(),
+          },
+        },
+      ],
+    })
   }
 
   return (
@@ -264,37 +308,13 @@ function CheckoutView() {
                       </button>
                     )}
 
-                    {/* <PayPalScriptProvider options={initialOptions}> */}
-                    {/*   <PayPalButtons */}
-                    {/*     className="mt-3" */}
-                    {/*     createOrder={(data, actions) => { */}
-                    {/*       return actions.order.create({ */}
-                    {/*         purchase_units: [ */}
-                    {/*           { */}
-                    {/*             amount: { */}
-                    {/*               currency_code: 'USD', */}
-                    {/*               value: 100, */}
-                    {/*             }, */}
-                    {/*           }, */}
-                    {/*         ], */}
-                    {/*       }) */}
-                    {/*     }} */}
-                    {/*     onApprove={(data, actions) => { */}
-                    {/*       return actions.order.capture().then((details) => { */}
-                    {/*         const name = details.payer.name.given_name */}
-                    {/*         const status = details.status */}
-                    {/*         const payapl_order_id = data.orderID */}
-                    {/**/}
-                    {/*         console.log(status) */}
-                    {/*         if (status === 'COMPLETED') { */}
-                    {/*           navigate( */}
-                    {/*             `/payment-success/${order.oid}/?payapl_order_id=${payapl_order_id}`, */}
-                    {/*           ) */}
-                    {/*         } */}
-                    {/*       }) */}
-                    {/*     }} */}
-                    {/*   /> */}
-                    {/* </PayPalScriptProvider> */}
+                    <PayPalScriptProvider options={initialOptions}>
+                      <PayPalButtons
+                        className="mt-3"
+                        createOrder={paypalCreateOrder}
+                        onApprove={paypalOnAprover}
+                      />
+                    </PayPalScriptProvider>
 
                     {/* <button type="button" className="btn btn-primary btn-rounded w-100 mt-2">Pay Now (Flutterwave)</button>
                                 <button type="button" className="btn btn-primary btn-rounded w-100 mt-2">Pay Now (Paystack)</button>
