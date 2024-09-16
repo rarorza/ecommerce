@@ -61,9 +61,9 @@ function CheckoutView() {
   }
 
   // Stripe
+  // test card 4242 4242 4242 4242
 
   const payWithStripe = async () => {
-    // test card 4242424242424242
     setPaymentLoading(true)
     try {
       const res = await apiInstace.post(`checkout-stripe/${order?.oid}/`)
@@ -78,6 +78,7 @@ function CheckoutView() {
   }
 
   // Paypal
+  // test card 4032 0389 5459 0182 - 07/2029 - 453
 
   const initialOptions = {
     clientId: PAYPAL_CLIENT_ID,
