@@ -13,6 +13,7 @@ export default function PaymentSuccessView() {
 
   const urlParam = new URLSearchParams(window.location.search)
   const sessionId = urlParam.get('session_id')
+  const paypalOrderId = urlParam.get('paypal_order_id')
 
   useEffect(() => {
     if (order_oid) {
@@ -25,11 +26,12 @@ export default function PaymentSuccessView() {
     const data = JSON.stringify({
       order_oid: order_oid,
       session_id: sessionId,
+      paypal_order_id: paypalOrderId,
     })
     formData.append('data', data)
 
     try {
-      apiInstace.post(`payment-success/${order_oid}/`, formData).then((res) => {
+      apiInstace.post(`payment-success/${params.order_oid}/`, formData).then((res) => {
         const { message } = res.data
         if (message === 'Payment successfull' || message === 'Already paid') {
           setStatus('Payment Successfull')

@@ -1,6 +1,7 @@
 import json
 from decimal import Decimal
 
+import requests
 import stripe
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -9,11 +10,24 @@ from dotenv import load_dotenv
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from store.models import (Cart, CartOrder, CartOrderItem, Category, Coupon,
-                          Notification, Product, Tax)
-from store.serializers import (CartOrderItemSerializer, CartOrderSerializer,
-                               CartSerializer, CategorySerializer,
-                               CouponSerializer, ProductSerializer)
+from store.models import (
+    Cart,
+    CartOrder,
+    CartOrderItem,
+    Category,
+    Coupon,
+    Notification,
+    Product,
+    Tax,
+)
+from store.serializers import (
+    CartOrderItemSerializer,
+    CartOrderSerializer,
+    CartSerializer,
+    CategorySerializer,
+    CouponSerializer,
+    ProductSerializer,
+)
 from userauth.models import User
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -399,7 +413,7 @@ class CheckoutStripeView(generics.CreateAPIView):
                 ],
                 mode="payment",
                 success_url=f"http://localhost:5173/payment-success/{order.oid}?session_id={{CHECKOUT_SESSION_ID}}",
-                cancel_url=f"http://localhost:5173/payment-failed/?session_id={{CHECKOUT_SESSION_ID}}",
+                cancel_url="http://localhost:5173/payment-failed/?session_id={CHECKOUT_SESSION_ID}",
             )
             order.stripe_session_id = checkout_session.id
             order.save()
@@ -414,6 +428,16 @@ class CheckoutStripeView(generics.CreateAPIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+def get_access_token_paypal(client_id, secret_id):
+    token_url = "https://api.sandbox.paypal.com/v1/oauth2/token"
+    data = {"grant_type": "client_credentials"}
+    auth = (client_id, secret_id)
+    response = requests.post(token_url, data=data, auth=auth)
+    if response.status_code == "200":
+        return response.json()["access_token"]
+    raise Exception(f"Failed to get access token: {response.status_code}")
 
 
 class PaymentSuccessView(generics.CreateAPIView):
@@ -431,10 +455,96 @@ class PaymentSuccessView(generics.CreateAPIView):
 
         order_oid = payload.get("order_oid")
         session_id = payload.get("session_id")
+        paypal_order_id = payload.get("paypal_order_id", "")
 
         order = CartOrder.objects.filter(oid=order_oid).first()
         order_items = CartOrderItem.objects.filter(order=order)
 
+        # Paypal
+        if paypal_order_id:
+            access_token = get_access_token_paypal(
+                settings.PAYPAL_CLIENT_ID,
+                settings.PAYPAL_SECRET_ID,
+            )
+            paypal_api_url = (
+                f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{paypal_order_id}"
+            )
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {access_token}",
+            }
+            response = requests.get(paypal_api_url, headers=headers)
+            if response.status_code == 200:
+                paypal_order_data = response.json()
+                paypal_payment_status = paypal_order_data["status"]
+                if paypal_payment_status == "COMPLETED":
+                    if order.payment_status == "pending":
+                        order.payment_status = "paid"
+                        order.save()
+
+                        # Send notification and email to buyer and vendor
+                        if order.buyer:
+                            send_notification(user=order.buyer, order=order)
+
+                        context = {"order": order, "order_items": order_items}
+                        subject = "Order Placed Succesfully"
+                        text_body = render_to_string(
+                            "email/customer_order_confirmation.txt", context
+                        )
+                        html_body = render_to_string(
+                            "email/customer_order_confirmation.html", context
+                        )
+                        msg = EmailMultiAlternatives(
+                            subject=subject,
+                            from_email=settings.FROM_EMAIL,
+                            to=[order.email],
+                            body=text_body,
+                        )
+                        msg.attach_alternative(html_body, "text/html")
+                        msg.send()
+
+                        # Send notification and email to vendor
+                        for item in order_items:
+                            send_notification(
+                                vendor=item.vendor, order=order, order_item=item
+                            )
+
+                            items_from_vendor = order_items.filter(vendor=item.vendor)
+
+                            context = {
+                                "order": order,
+                                "order_items": items_from_vendor,
+                                "vendor": item.vendor,
+                            }
+                            subject = "New Sale!"
+                            text_body = render_to_string(
+                                "email/vendor_sale.txt", context
+                            )
+                            html_body = render_to_string(
+                                "email/vendor_sale.html", context
+                            )
+                            msg = EmailMultiAlternatives(
+                                subject=subject,
+                                from_email=settings.FROM_EMAIL,
+                                to=[item.vendor.user.email],
+                                body=text_body,
+                            )
+                            msg.attach_alternative(html_body, "text/html")
+                            msg.send()
+
+                        return Response(
+                            {"message": "Payment successfully"},
+                            status=status.HTTP_200_OK,
+                        )
+                    return Response(
+                        {"message": "Already paid"}, status=status.HTTP_200_OK
+                    )
+            return Response(
+                {"message": "An error occured, try again..."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Stripe
         if session_id != "null":
             session = stripe.checkout.Session.retrieve(session_id)
 
