@@ -18,6 +18,7 @@ from store.models import (
     Coupon,
     Notification,
     Product,
+    Review,
     Tax,
 )
 from store.serializers import (
@@ -27,6 +28,7 @@ from store.serializers import (
     CategorySerializer,
     CouponSerializer,
     ProductSerializer,
+    ReviewSerializer,
 )
 from userauth.models import User
 
@@ -618,3 +620,14 @@ class PaymentSuccessView(generics.CreateAPIView):
             {"message": "An error occured, try again..."},
             status=status.HTTP_404_NOT_FOUND,
         )
+
+
+class ReviewListAPIView(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self, *args, **kwargs):
+        product_id = self.kwargs["product_id"]
+        product = Product.objects.filter(id=product_id).first()
+        reviews = Review.objects.filter(product=product)
+        return reviews
