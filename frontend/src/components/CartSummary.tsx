@@ -1,15 +1,10 @@
-import { useEffect } from 'react'
-import { CartTotalProperties } from '../views/store/CartView'
+import { CartTotalProperties } from '../shared/cart.interface'
 interface Props {
   cartTotal: CartTotalProperties
   isCheckout?: boolean
 }
 
 const CartSummary = ({ cartTotal, isCheckout = false }: Props) => {
-  useEffect(() => {
-    console.log('o')
-    console.log(cartTotal)
-  }, [])
   return (
     <>
       <h5 className="mb-3">Cart Summary</h5>
@@ -29,13 +24,14 @@ const CartSummary = ({ cartTotal, isCheckout = false }: Props) => {
         <span>Servive Fee </span>
         <span>${cartTotal?.service_fee.toFixed(2)}</span>
       </div>
-      {isCheckout && cartTotal.saved ?
+      {isCheckout && cartTotal.saved ? (
         <div className="d-flex justify-content-between">
           <span>Discount </span>
           <span>- ${cartTotal.saved.toFixed(2)}</span>
         </div>
-        : ''
-      }
+      ) : (
+        ''
+      )}
       <hr className="my-4" />
       <div className="d-flex justify-content-between fw-bold mb-5">
         <span>Total </span>

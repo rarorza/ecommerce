@@ -1,4 +1,4 @@
-import apiInstace from '../axios'
+import apiInstance from '../axios'
 
 import { IOrder } from '../../shared/order.interface'
 import { CartTotalProperties } from '../../shared/cart.interface'
@@ -8,7 +8,7 @@ export const getCheckoutData = async (
   setOrder: (order: IOrder) => void,
   setCartTotal?: (cartTotal: CartTotalProperties) => void | null,
 ) => {
-  const response = await apiInstace.get(`checkout/${oid}`)
+  const response = await apiInstance.get(`checkout/${oid}`)
   const order: IOrder = response.data
 
   const cartTotal: CartTotalProperties = {

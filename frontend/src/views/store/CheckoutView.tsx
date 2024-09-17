@@ -8,7 +8,7 @@ import {
 } from '@paypal/react-paypal-js'
 
 import CartSummary from '../../components/CartSummary'
-import apiInstace from '../../utils/axios'
+import apiInstance from '../../utils/axios'
 import { IOrder } from '../../shared/order.interface'
 import { CartTotalProperties } from '../../shared/cart.interface'
 import { AxiosError } from 'axios'
@@ -39,7 +39,7 @@ function CheckoutView() {
     formData.append('data', data)
 
     try {
-      const response = await apiInstace.post(`coupon/`, formData)
+      const response = await apiInstance.post(`coupon/`, formData)
       Swal.fire({
         icon: response.data.icon,
         title: response.data.message,
@@ -66,7 +66,7 @@ function CheckoutView() {
   const payWithStripe = async () => {
     setPaymentLoading(true)
     try {
-      const res = await apiInstace.post(`checkout-stripe/${order?.oid}/`)
+      const res = await apiInstance.post(`checkout-stripe/${order?.oid}/`)
       console.log(res.data)
       if (res.data.redirect_url) {
         window.location.href = `${res.data.redirect_url}`

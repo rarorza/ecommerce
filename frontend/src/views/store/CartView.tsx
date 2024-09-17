@@ -1,17 +1,17 @@
 import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import { get } from 'lodash'
 
-import apiInstance from '../../utils/axios'
 import GetUserData from '../../utils/plugins/GetUserData'
 import GenarateCartID from '../../utils/plugins/GenerateCartID'
 import { ICart, CartTotalProperties } from '../../shared/cart.interface'
 import { IProduct } from '../../shared/product.interface'
 import GetUserCountry from '../../utils/plugins/GetUserCountry'
-import apiInstace from '../../utils/axios'
+import apiInstance from '../../utils/axios'
 import { useNavigate } from 'react-router-dom'
 import CartSummary from '../../components/CartSummary'
+import { CartContext } from '../../context/CartContext'
 
 interface IHashNumber {
   [key: number]: number
@@ -42,6 +42,8 @@ function Cart() {
   const [state, setState] = useState('')
   const [country, setCountry] = useState('')
 
+  const [cartCount, setCartCount] = useContext(CartContext)
+
   const navigate = useNavigate()
 
   // Cart General
@@ -66,7 +68,6 @@ function Cart() {
     try {
       apiInstance.get(url).then((res) => {
         setCartTotal(res.data)
-        console.log(res.data)
       })
     } catch (error) {
       console.log(error)
@@ -156,6 +157,11 @@ function Cart() {
         icon: 'success',
         title: 'Item removed from cart',
       })
+
+      setCartCount(() => {
+        let total = cartCount
+        return (total -= 1)
+      })
     } catch (error) {
       console.log(error)
     }
@@ -225,7 +231,7 @@ function Cart() {
     formData.append('data', data)
 
     try {
-      const response = await apiInstace.post('create-order/', formData)
+      const response = await apiInstance.post('create-order/', formData)
       navigate(`/checkout/${response.data.order_oid}`)
     } catch (error) {
       console.log(error)

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { create, get } from 'lodash'
 import Swal from 'sweetalert2'
@@ -14,6 +14,7 @@ import { ISpecifications } from '../../shared/specifications.interface.ts'
 import { IColors } from '../../shared/colors.interface.ts'
 import { ISizes } from '../../shared/sizes.interface.ts'
 import { IReview, NewReview } from '../../shared/review.interface.ts'
+import { CartContext } from '../../context/CartContext.tsx'
 
 const ToastNotification = Swal.mixin({
   toast: true,
@@ -42,9 +43,10 @@ function ProductDetailView() {
   const [createReview, setCreateReview] = useState<NewReview>({
     user_id: 0,
     product_id: 0,
-    review: "",
+    review: '',
     rating: 5,
   })
+  const [cartCount, setCartCount] = useContext(CartContext)
 
   const param = useParams()
 
@@ -111,6 +113,11 @@ function ProductDetailView() {
         icon: 'success',
         title: response.data.message,
       })
+
+      setCartCount(() => {
+        let total = cartCount
+        return (total += 1)
+      })
     } catch (error) {
       console.log('error', error)
     }
@@ -123,7 +130,7 @@ function ProductDetailView() {
       user_id: userData?.user_id,
       product_id: product?.id,
       review: createReview.review,
-      rating: createReview.rating
+      rating: createReview.rating,
     })
 
     try {
@@ -138,7 +145,7 @@ function ProductDetailView() {
   const handleReviewChange = (e) => {
     setCreateReview({
       ...createReview,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     })
   }
 
@@ -508,7 +515,12 @@ function ProductDetailView() {
                         <label htmlFor="username" className="form-label">
                           Rating
                         </label>
-                        <select name="rating" onChange={handleReviewChange} className="form-select" id="">
+                        <select
+                          name="rating"
+                          onChange={handleReviewChange}
+                          className="form-select"
+                          id=""
+                        >
                           <option value={1}>1 Star</option>
                           <option value={2}>2 Star</option>
                           <option value={3}>3 Star</option>
@@ -530,7 +542,11 @@ function ProductDetailView() {
                           defaultValue={''}
                         />
                       </div>
-                      <button onClick={e => handleReviewSubmit(e)} type="submit" className="btn btn-primary">
+                      <button
+                        onClick={(e) => handleReviewSubmit(e)}
+                        type="submit"
+                        className="btn btn-primary"
+                      >
                         Submit Review
                       </button>
                     </form>
@@ -563,7 +579,7 @@ function ProductDetailView() {
                                 {/* Creates an empty array to render tag i depending on the rating number */}
                                 {Array.from({ length: review.rating }).map(
                                   (_, i) => (
-                                      <i key={i} className="fas fa-star"></i>
+                                    <i key={i} className="fas fa-star"></i>
                                   ),
                                 )}
                               </p>

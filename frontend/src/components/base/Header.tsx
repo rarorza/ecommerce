@@ -1,9 +1,11 @@
-import {useState} from 'react'
+import { useState, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/auth'
+import { CartContext } from '../../context/CartContext'
 
 function Header() {
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState('')
+  const [cartCount] = useContext(CartContext)
 
   const navigate = useNavigate()
 
@@ -159,12 +161,16 @@ function Header() {
                 aria-label="Search"
                 onChange={handleSearchChange}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") {
+                  if (e.key === 'Enter') {
                     handleSearchSubmit()
                   }
-                }}  
+                }}
               />
-              <button className="btn btn-outline-success me-2" type="button" onClick={handleSearchSubmit}>
+              <button
+                className="btn btn-outline-success me-2"
+                type="button"
+                onClick={handleSearchSubmit}
+              >
                 Search
               </button>
             </div>
@@ -190,11 +196,14 @@ function Header() {
                 </Link>
               </>
             )}
-            <Link className="btn btn-danger" to="/cart">
+            {/* <Link className="btn btn-danger" to="/cart">
               <i className="fas fa-shopping-cart"></i>{' '}
               <span id="cart-total-items">0</span>
+            </Link> */}
+            <Link className="btn btn-danger" to="/cart">
+              <i className="fas fa-shopping-cart"></i>{' '}
+              <span id="cart-total-items">{cartCount || ''}</span>
             </Link>
-            {/* <Link className="btn btn-danger" to="/cart"><i className='fas fa-shopping-cart'></i> <span id='cart-total-items'>{cartCount || 0}</span></Link> */}
           </div>
         </div>
       </nav>

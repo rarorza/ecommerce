@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import apiInstance from '../../utils/axios'
 import ProductCard from '../../components/ProductCard'
 import GetUserCountry from '../../utils/plugins/GetUserCountry'
@@ -7,6 +7,7 @@ import GenerateCartID from '../../utils/plugins/GenerateCartID'
 import Swal from 'sweetalert2'
 import { IProduct } from '../../shared/product.interface'
 import { useSearchParams } from 'react-router-dom'
+import { CartContext } from '../../context/CartContext'
 
 interface ICategory {
   image: string
@@ -35,9 +36,10 @@ function SearchView() {
   const userAddress = GetUserCountry()
   const userData = GetUserData()
   const cartID = GenerateCartID()
+  const [cartCount, setCartCount] = useContext(CartContext)
 
   const [searchParams] = useSearchParams()
-  const query = searchParams.get("query")
+  const query = searchParams.get('query')
 
   const getProducts = async () => {
     const res = await apiInstance.get(`search/?query=${query}`)
@@ -105,6 +107,11 @@ function SearchView() {
       ToastNotification.fire({
         icon: 'success',
         title: response.data.message,
+      })
+
+      setCartCount(() => {
+        let total = cartCount
+        return (total += 1)
       })
     } catch (error) {
       console.log('error', error)

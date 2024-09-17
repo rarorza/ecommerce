@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { IOrder } from '../../shared/order.interface'
 import { getCheckoutData } from '../../utils/plugins/GetCheckoutData'
-import apiInstace from '../../utils/axios'
+import apiInstance from '../../utils/axios'
 
 export default function PaymentSuccessView() {
   const [order, setOrder] = useState<IOrder>()
@@ -31,15 +31,17 @@ export default function PaymentSuccessView() {
     formData.append('data', data)
 
     try {
-      apiInstace.post(`payment-success/${params.order_oid}/`, formData).then((res) => {
-        const { message } = res.data
-        if (message === 'Payment successfull' || message === 'Already paid') {
-          setStatus('Payment Successfull')
-        }
-        if (message === 'Your invoice is unpaid') {
-          setStatus('Your invoice is unpaid')
-        }
-      })
+      apiInstance
+        .post(`payment-success/${params.order_oid}/`, formData)
+        .then((res) => {
+          const { message } = res.data
+          if (message === 'Payment successfull' || message === 'Already paid') {
+            setStatus('Payment Successfull')
+          }
+          if (message === 'Your invoice is unpaid') {
+            setStatus('Your invoice is unpaid')
+          }
+        })
     } catch (error) {
       console.log(error)
       setStatus('An error occured, try again...')
