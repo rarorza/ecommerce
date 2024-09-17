@@ -13,6 +13,7 @@ import ProductDetailView from './views/store/ProductDetailView'
 import CartView from './views/store/CartView'
 import CheckoutView from './views/store/CheckoutView'
 import PaymentSuccessView from './views/store/PaymentSuccessView'
+import SearchView from './views/store/SearchView'
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           path="/payment-success/:order_oid"
           element={<PaymentSuccessView />}
         />
+        <Route path="/search" element={<SearchView />} />
       </Routes>
       <Footer />
     </BrowserRouter>

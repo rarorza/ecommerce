@@ -1,12 +1,24 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import {useState} from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/auth'
 
 function Header() {
+  const [search, setSearch] = useState("")
+
+  const navigate = useNavigate()
+
   const [isLoggedIn, user] = useAuthStore((state) => [
     state.isLoggedIn,
     state.user,
   ])
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value)
+  }
+
+  const handleSearchSubmit = () => {
+    navigate(`/search/?query=${search}`)
+  }
   return (
     <div>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -145,8 +157,14 @@ function Header() {
                 type="text"
                 placeholder="Search"
                 aria-label="Search"
+                onChange={handleSearchChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearchSubmit()
+                  }
+                }}  
               />
-              <button className="btn btn-outline-success me-2" type="submit">
+              <button className="btn btn-outline-success me-2" type="button" onClick={handleSearchSubmit}>
                 Search
               </button>
             </div>

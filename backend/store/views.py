@@ -661,3 +661,13 @@ class ReviewListAPIView(generics.ListCreateAPIView):
             {"message": "Unauthorized"},
             status=status.HTTP_401_UNAUTHORIZED,
         )
+
+
+class SearchProductAPIView(generics.ListCreateAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        query = self.request.GET.get("query")
+        products = Product.objects.filter(status="published", title__icontains=query)
+        return products

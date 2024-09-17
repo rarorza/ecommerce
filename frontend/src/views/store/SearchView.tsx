@@ -6,6 +6,7 @@ import GetUserData from '../../utils/plugins/GetUserData'
 import GenerateCartID from '../../utils/plugins/GenerateCartID'
 import Swal from 'sweetalert2'
 import { IProduct } from '../../shared/product.interface'
+import { useSearchParams } from 'react-router-dom'
 
 interface ICategory {
   image: string
@@ -20,9 +21,8 @@ const ToastNotification = Swal.mixin({
   timerProgressBar: true,
 })
 
-function Products() {
+function SearchView() {
   const [products, setProducts] = useState<IProduct[]>()
-  const [categories, setCategories] = useState<ICategory[]>([])
 
   const [colorValue, setColorValue] = useState('No Color')
   const [sizeValue, setSizeValue] = useState('No Size')
@@ -36,17 +36,17 @@ function Products() {
   const userData = GetUserData()
   const cartID = GenerateCartID()
 
-  useEffect(() => {
-    apiInstance.get('products/').then((res) => {
-      setProducts(res.data)
-    })
-  }, [])
+  const [searchParams] = useSearchParams()
+  const query = searchParams.get("query")
+
+  const getProducts = async () => {
+    const res = await apiInstance.get(`search/?query=${query}`)
+    setProducts(res.data)
+  }
 
   useEffect(() => {
-    apiInstance.get('categories/').then((res) => {
-      setCategories(res.data)
-    })
-  }, [])
+    getProducts()
+  }, [query])
 
   const handleColorButtonClick = (productId: number, colorName: string) => {
     setColorValue(colorName)
@@ -110,7 +110,6 @@ function Products() {
       console.log('error', error)
     }
   }
-
   return (
     <>
       <main className="mt-5">
@@ -130,96 +129,12 @@ function Products() {
                   handleAddToCart={handleAddToCart}
                 />
               ))}
-              <div className="row">
-                {/* category card */}
-                {categories?.map((category, index) => (
-                  <div className="col-lg-2" key={index}>
-                    <img
-                      src={category.image}
-                      style={{
-                        width: '100px',
-                        height: '100px',
-                        borderRadius: '50%',
-                        objectFit: 'cover',
-                      }}
-                      alt=""
-                    />
-                    <h6>{category.title}</h6>
-                  </div>
-                ))}
-                {/* end */}
-              </div>
             </div>
           </section>
-          {/*Section: Wishlist*/}
-        </div>
-      </main>
-      {/*Main layout*/}
-      <main>
-        <section className="text-center container">
-          <div className="row py-lg-5">
-            <div className="col-lg-6 col-md-8 mx-auto">
-              <h1 className="fw-light">Trending Products</h1>
-              <p className="lead text-muted">
-                Something short and leading about the collection below—its
-                contents
-              </p>
-            </div>
-          </div>
-        </section>
-        <div className="album py-5 bg-light">
-          <div className="container">
-            <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-              <div className="col">
-                <div className="card shadow-sm">
-                  <svg
-                    className="bd-placeholder-img card-img-top"
-                    width="100%"
-                    height={225}
-                    xmlns="http://www.w3.org/2000/svg"
-                    role="img"
-                    aria-label="Placeholder: Thumbnail"
-                    preserveAspectRatio="xMidYMid slice"
-                    focusable="false"
-                  >
-                    <title>Placeholder</title>
-                    <rect width="100%" height="100%" fill="#55595c" />
-                    <text x="50%" y="50%" fill="#eceeef" dy=".3em">
-                      Thumbnail
-                    </text>
-                  </svg>
-                  <div className="card-body">
-                    <p className="card-text">
-                      This is a wider card with supporting text below as a
-                      natural lead-in to additional content. This content is a
-                      little bit longer.
-                    </p>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="btn-group">
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-secondary"
-                        >
-                          View
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-outline-secondary"
-                        >
-                          Edit
-                        </button>
-                      </div>
-                      <small className="text-muted">9 mins</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </main>
     </>
   )
 }
 
-export default Products
+export default SearchView
