@@ -15,6 +15,7 @@ from store.models import (
     Specification,
     Wishlist,
 )
+from userauth.serializers import ProfileSerializer
 from vendor.models import Vendor
 
 
@@ -182,9 +183,11 @@ class ProductFaqSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer()
+
     class Meta:
         model = Review
-        fields = "__all__"
+        fields = ["id", "profile", "review", "reply", "rating", "date"]
 
     def __init__(self, *args, **kwargs):
         super(ReviewSerializer, self).__init__(*args, **kwargs)

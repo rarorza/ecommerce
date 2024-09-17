@@ -449,7 +449,6 @@ class PaymentSuccessView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         key = list(request.data.keys())
-        print(key)
         if len(key) == 1:
             payload = json.loads(request.data[key[0]])
         else:
@@ -622,12 +621,43 @@ class PaymentSuccessView(generics.CreateAPIView):
         )
 
 
-class ReviewListAPIView(generics.ListAPIView):
+class ReviewListAPIView(generics.ListCreateAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [AllowAny]
 
-    def get_queryset(self, *args, **kwargs):
+    def get_queryset(self):
         product_id = self.kwargs["product_id"]
         product = Product.objects.filter(id=product_id).first()
-        reviews = Review.objects.filter(product=product)
+        reviews = Review.objects.filter(product=product).order_by("-pk")
         return reviews
+
+    def create(self, request, *args, **kwargs):
+        key = list(request.data.keys())
+        if len(key) == 1:
+            payload = json.loads(request.data[key[0]])
+        else:
+            payload = request.data
+
+        user_id = payload.get("user_id")
+        product_id = payload.get("product_id")
+        rating = payload.get("rating")
+        review = payload.get("review")
+
+        user = User.objects.filter(id=user_id).first()
+        if user:
+            product = Product.objects.filter(id=product_id).first()
+
+            Review.objects.create(
+                user=user,
+                product=product,
+                rating=rating,
+                review=review,
+            )
+            return Response(
+                {"message": "Review created successfully"},
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            {"message": "Unauthorized"},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )

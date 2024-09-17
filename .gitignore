@@ -2,7 +2,8 @@
 # /sn_api/project/local_settings.py
 
 /backend/media/*
-/backend/staticfiles/
+!/backend/media/default/
+!/backend/static/static_files_here.txt
 # !/sn_api/media/
 # !/sn_api/media/avatars/
 # /sn_api/media/avatars/*

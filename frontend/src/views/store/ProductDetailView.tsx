@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { get } from 'lodash'
+import { create, get } from 'lodash'
 import Swal from 'sweetalert2'
+import moment from 'moment'
 
 import apiInstance from '../../utils/axios'
 import GetUserCountry from '../../utils/plugins/GetUserCountry.jsx'
@@ -12,6 +13,7 @@ import { IGallery } from '../../shared/gallery.interface.ts'
 import { ISpecifications } from '../../shared/specifications.interface.ts'
 import { IColors } from '../../shared/colors.interface.ts'
 import { ISizes } from '../../shared/sizes.interface.ts'
+import { IReview, NewReview } from '../../shared/review.interface.ts'
 
 const ToastNotification = Swal.mixin({
   toast: true,
@@ -36,7 +38,22 @@ function ProductDetailView() {
   const userData = GetUserData()
   const cartID = GenerateCartID()
 
+  const [reviews, setReviews] = useState<IReview[]>()
+  const [createReview, setCreateReview] = useState<NewReview>({
+    user_id: 0,
+    product_id: 0,
+    review: "",
+    rating: 5,
+  })
+
   const param = useParams()
+
+  const getReviewsData = async () => {
+    if (product) {
+      const res = await apiInstance.get(`reviews/${product?.id}/`)
+      setReviews(res.data)
+    }
+  }
 
   useEffect(() => {
     apiInstance.get(`product/${param.slug}`).then((res) => {
@@ -49,6 +66,7 @@ function ProductDetailView() {
         setSizes(res.data.size)
       }
     })
+    getReviewsData()
   }, [product, param.slug])
 
   const handleColorButtonClick = (e) => {
@@ -96,6 +114,32 @@ function ProductDetailView() {
     } catch (error) {
       console.log('error', error)
     }
+  }
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault()
+    const formData = new FormData()
+    const data = JSON.stringify({
+      user_id: userData?.user_id,
+      product_id: product?.id,
+      review: createReview.review,
+      rating: createReview.rating
+    })
+
+    try {
+      formData.append('data', data)
+      await apiInstance.post(`reviews/${product?.id}/`, formData)
+      getReviewsData()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleReviewChange = (e) => {
+    setCreateReview({
+      ...createReview,
+      [e.target.name]: e.target.value
+    })
   }
 
   return (
@@ -464,12 +508,12 @@ function ProductDetailView() {
                         <label htmlFor="username" className="form-label">
                           Rating
                         </label>
-                        <select name="" className="form-select" id="">
-                          <option value="1">1 Star</option>
-                          <option value="1">2 Star</option>
-                          <option value="1">3 Star</option>
-                          <option value="1">4 Star</option>
-                          <option value="1">5 Star</option>
+                        <select name="rating" onChange={handleReviewChange} className="form-select" id="">
+                          <option value={1}>1 Star</option>
+                          <option value={2}>2 Star</option>
+                          <option value={3}>3 Star</option>
+                          <option value={4}>4 Star</option>
+                          <option value={5}>5 Star</option>
                         </select>
                       </div>
                       <div className="mb-3">
@@ -479,12 +523,14 @@ function ProductDetailView() {
                         <textarea
                           className="form-control"
                           id="reviewText"
+                          name="review"
+                          onChange={handleReviewChange}
                           rows={4}
                           placeholder="Write your review"
                           defaultValue={''}
                         />
                       </div>
-                      <button type="submit" className="btn btn-primary">
+                      <button onClick={e => handleReviewSubmit(e)} type="submit" className="btn btn-primary">
                         Submit Review
                       </button>
                     </form>
@@ -492,48 +538,40 @@ function ProductDetailView() {
                   {/* Column 2: Display existing reviews */}
                   <div className="col-md-6">
                     <h2>Existing Reviews</h2>
-                    <div className="card mb-3">
-                      <div className="row g-0">
-                        <div className="col-md-3">
-                          <img
-                            src="https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250"
-                            alt="User Image"
-                            className="img-fluid"
-                          />
-                        </div>
-                        <div className="col-md-9">
-                          <div className="card-body">
-                            <h5 className="card-title">User 1</h5>
-                            <p className="card-text">August 10, 2023</p>
-                            <p className="card-text">
-                              This is a great product! I'm really satisfied with
-                              it.
-                            </p>
+                    {reviews?.map((review, index) => (
+                      <div className="card mb-3" key={index}>
+                        <div className="row g-0">
+                          <div className="col-md-3">
+                            <img
+                              src={review.profile.image}
+                              alt="User Image"
+                              className="img-fluid"
+                            />
+                          </div>
+                          <div className="col-md-9">
+                            <div className="card-body">
+                              <h5 className="card-title">
+                                {review.profile.fullname}
+                              </h5>
+                              <p className="card-text">
+                                {moment(review.profile.date).format(
+                                  'MMM D, YYYY',
+                                )}
+                              </p>
+                              <p className="card-text">
+                                {review.review} <br />
+                                {/* Creates an empty array to render tag i depending on the rating number */}
+                                {Array.from({ length: review.rating }).map(
+                                  (_, i) => (
+                                      <i key={i} className="fas fa-star"></i>
+                                  ),
+                                )}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="card mb-3">
-                      <div className="row g-0">
-                        <div className="col-md-3">
-                          <img
-                            src="https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250"
-                            alt="User Image"
-                            className="img-fluid"
-                          />
-                        </div>
-                        <div className="col-md-9">
-                          <div className="card-body">
-                            <h5 className="card-title">User 2</h5>
-                            <p className="card-text">August 15, 2023</p>
-                            <p className="card-text">
-                              The quality of this product exceeded my
-                              expectations!
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    ))}
                     {/* More reviews can be added here */}
                   </div>
                 </div>
