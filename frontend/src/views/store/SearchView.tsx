@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import apiInstance from '../../utils/axios'
-import ProductCard from '../../components/ProductCard'
+import ProductCard from '../../components/store/ProductCard'
 import GetUserCountry from '../../utils/plugins/GetUserCountry'
 import GetUserData from '../../utils/plugins/GetUserData'
 import GenerateCartID from '../../utils/plugins/GenerateCartID'

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { IProduct } from '../shared/product.interface'
+import { IProduct } from '../../shared/product.interface'
 
 interface Props {
   product: IProduct

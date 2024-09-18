@@ -4,11 +4,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from userauth.models import Profile, User
-from userauth.serializers import (
-    MyTokenObtainPairSerializer,
-    RegisterSerializer,
-    UserSerializer,
-)
+from userauth.serializers import (MyTokenObtainPairSerializer,
+                                  ProfileSerializer, RegisterSerializer,
+                                  UserSerializer)
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -71,3 +69,14 @@ class PasswordChangeView(generics.CreateAPIView):
                 {"message": "User Does Not Exists"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+
+class ProfileView(generics.RetrieveAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        user_id = self.kwargs["user_id"]
+        user = User.objects.get(id=user_id)
+        profile = Profile.objects.get(user=user)
+        return profile

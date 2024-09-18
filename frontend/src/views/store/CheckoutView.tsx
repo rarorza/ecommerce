@@ -7,7 +7,7 @@ import {
   PayPalButtonsComponentProps,
 } from '@paypal/react-paypal-js'
 
-import CartSummary from '../../components/CartSummary'
+import CartSummary from '../../components/store/CartSummary'
 import apiInstance from '../../utils/axios'
 import { IOrder } from '../../shared/order.interface'
 import { CartTotalProperties } from '../../shared/cart.interface'

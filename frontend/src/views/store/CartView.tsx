@@ -10,7 +10,7 @@ import { IProduct } from '../../shared/product.interface'
 import GetUserCountry from '../../utils/plugins/GetUserCountry'
 import apiInstance from '../../utils/axios'
 import { useNavigate } from 'react-router-dom'
-import CartSummary from '../../components/CartSummary'
+import CartSummary from '../../components/store/CartSummary'
 import { CartContext } from '../../context/CartContext'
 
 interface IHashNumber {

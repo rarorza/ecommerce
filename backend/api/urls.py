@@ -14,6 +14,7 @@ urlpatterns = [
         userauth_views.PasswordResetAndEmailVerify.as_view(),
     ),
     path("user/password-change/", userauth_views.PasswordChangeView.as_view()),
+    path("user/profile/<user_id>", userauth_views.ProfileView.as_view()),
     # Store
     path("categories/", store_views.CategoryListAPIView.as_view()),
     path("products/", store_views.ProductListAPIView.as_view()),

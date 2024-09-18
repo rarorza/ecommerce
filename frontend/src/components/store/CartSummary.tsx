@@ -1,4 +1,4 @@
-import { CartTotalProperties } from '../shared/cart.interface'
+import { CartTotalProperties } from '../../shared/cart.interface'
 interface Props {
   cartTotal: CartTotalProperties
   isCheckout?: boolean

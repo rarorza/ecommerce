@@ -1,6 +1,6 @@
 export interface IProfile {
   image: string
-  fullname: string
+  full_name: string
   about: string
   gender: string
   country: string
