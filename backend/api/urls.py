@@ -1,3 +1,4 @@
+from customer import views as customer_views
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from store import views as store_views
@@ -41,4 +42,9 @@ urlpatterns = [
     # Payment
     path("checkout-stripe/<str:order_oid>/", store_views.CheckoutStripeView.as_view()),
     path("payment-success/<str:order_oid>/", store_views.PaymentSuccessView.as_view()),
+    # Customer
+    path("customer/orders/<user_id>/", customer_views.OrdersAPIView.as_view()),
+    path(
+        "customer/order/<user_id>/<order_oid>/", customer_views.OrdersAPIView.as_view()
+    ),
 ]

@@ -6,9 +6,8 @@ import stripe
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from dotenv import load_dotenv
 from rest_framework import generics, status
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from store.models import (
     Cart,
@@ -22,7 +21,6 @@ from store.models import (
     Tax,
 )
 from store.serializers import (
-    CartOrderItemSerializer,
     CartOrderSerializer,
     CartSerializer,
     CategorySerializer,
@@ -415,7 +413,7 @@ class CheckoutStripeView(generics.CreateAPIView):
                 ],
                 mode="payment",
                 success_url=f"http://localhost:5173/payment-success/{order.oid}?session_id={{CHECKOUT_SESSION_ID}}",
-                cancel_url="http://localhost:5173/payment-failed/?session_id={CHECKOUT_SESSION_ID}",
+                cancel_url=f"http://localhost:5173/payment-failed/?session_id={{CHECKOUT_SESSION_ID}}",
             )
             order.stripe_session_id = checkout_session.id
             order.save()
