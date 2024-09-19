@@ -55,6 +55,7 @@ function DashBoardView() {
                 <main className="mb-5" style={{}}>
                   <div className="container px-4">
                     <section className="">
+                      {/* WARNING: before add new state in outlet context, add Typing in ContextType */}
                       {orders && profile ? (
                         <Outlet
                           context={{ profile, orders } satisfies ContextType}
