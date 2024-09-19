@@ -1,8 +1,18 @@
 import moment from 'moment'
 import { useOutletDashBoard } from '../../views/customer/DashBoardOutlet'
 
+interface IStatusCounts {
+  [status: string]: number
+}
+
 function Orders() {
   const { orders } = useOutletDashBoard()
+
+  const statusCounts = orders.reduce<IStatusCounts>((acumulator, order) => {
+    const status = order.order_status
+    acumulator[status] = (acumulator[status] || 0) + 1
+    return acumulator
+  }, {})
 
   return (
     <div className="container px-4">
@@ -21,7 +31,7 @@ function Orders() {
                   <div className="">
                     <p className="mb-1">Orders</p>
                     <h2 className="mb-0">
-                      9
+                      {orders.length}
                       <span
                         className=""
                         style={{ fontSize: '0.875rem' }}
@@ -50,7 +60,7 @@ function Orders() {
                   <div className="">
                     <p className="mb-1">Pending Delivery</p>
                     <h2 className="mb-0">
-                      6
+                      {statusCounts.pending}
                       <span
                         className=""
                         style={{ fontSize: '0.875rem' }}
@@ -79,7 +89,7 @@ function Orders() {
                   <div className="">
                     <p className="mb-1">Fulfilled Orders</p>
                     <h2 className="mb-0">
-                      2
+                      {statusCounts.fullfilled || 0}
                       <span
                         className=""
                         style={{ fontSize: '0.875rem' }}
