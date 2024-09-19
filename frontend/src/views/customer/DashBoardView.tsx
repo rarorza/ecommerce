@@ -1,23 +1,47 @@
+import { Outlet } from 'react-router-dom'
 import SideBar from '../../components/customer/SideBar'
 import { useState, useEffect } from 'react'
 import apiInstance from '../../utils/axios'
 import { IProfile } from '../../shared/profile.interface'
 import GetUserData from '../../utils/plugins/GetUserData'
+import { IOrder } from '../../shared/order.interface'
+// Outlet Typing
+import { ContextType } from './DashBoardOutlet'
 
-function AccountView() {
+function DashBoardView() {
   const [profile, setProfile] = useState<IProfile>()
+  const [orders, setOrders] = useState<IOrder[]>()
   const userData = GetUserData()
 
   const getProfileData = async () => {
     if (userData?.user_id) {
-      const res = await apiInstance.get(`user/profile/${userData?.user_id}`)
-      setProfile(res.data)
+      try {
+        const res = await apiInstance.get(`user/profile/${userData?.user_id}`)
+        setProfile(res.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+
+  const getOrdersData = async () => {
+    if (userData?.user_id) {
+      try {
+        const res = await apiInstance.get(
+          `customer/orders/${userData?.user_id}/`,
+        )
+        setOrders(res.data)
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 
   useEffect(() => {
     getProfileData()
+    getOrdersData()
   }, [])
+
   return (
     <>
       <main className="mt-5">
@@ -30,17 +54,14 @@ function AccountView() {
               <div className="col-lg-9 mt-1">
                 <main className="mb-5" style={{}}>
                   <div className="container px-4">
-                    <section className=""></section>
                     <section className="">
-                      <div className="row rounded shadow p-3">
-                        <h2>Hi {profile?.full_name}, </h2>
-                        <div className="col-lg-12 mb-4 mb-lg-0 h-100">
-                          From your account dashboard. you can easily check
-                          &amp; view your <a href="">orders</a>, manage your{' '}
-                          <a href="">shipping</a>
-                          <a href="">Edit Account</a>
-                        </div>
-                      </div>
+                      {orders && profile ? (
+                        <Outlet
+                          context={{ profile, orders } satisfies ContextType}
+                        />
+                      ) : (
+                        ''
+                      )}
                     </section>
                   </div>
                 </main>
@@ -53,4 +74,4 @@ function AccountView() {
   )
 }
 
-export default AccountView
+export default DashBoardView

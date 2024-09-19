@@ -14,10 +14,12 @@ import CartView from './views/store/CartView'
 import CheckoutView from './views/store/CheckoutView'
 import PaymentSuccessView from './views/store/PaymentSuccessView'
 import SearchView from './views/store/SearchView'
-import AccountView from './views/customer/AccountView'
 import { CartProvider } from './context/CartContext'
 import PrivateRoute from './layout/PrivateRoute'
 import MainWrapper from './layout/MainWrapper'
+import DashBoardView from './views/customer/DashBoardView'
+import Account from './components/customer/Account'
+import Orders from './components/customer/Orders'
 
 function App() {
   return (
@@ -47,14 +49,19 @@ function App() {
             />
             <Route path="/search" element={<SearchView />} />
             {/*Customer Components*/}
+            {/* To make possible nested routes, I'm using Outlet from react router dom to manage props  */}
             <Route
-              path="/customer/account"
+              path="/customer/*"
               element={
                 <PrivateRoute>
-                  <AccountView />
+                  <DashBoardView />
                 </PrivateRoute>
               }
-            />
+            >
+              <Route path="account" element={<Account />} />
+              <Route path="orders" element={<Orders />} />
+            </Route>
+            <Route />
           </Routes>
         </MainWrapper>
         <Footer />
