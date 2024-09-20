@@ -20,6 +20,7 @@ import MainWrapper from './layout/MainWrapper'
 import DashBoardView from './views/customer/DashBoardView'
 import Account from './components/customer/Account'
 import Orders from './components/customer/Orders'
+import OrderDetail from './components/customer/OrderDetail'
 
 function App() {
   return (
@@ -40,7 +41,7 @@ function App() {
 
             {/*Store Components*/}
             <Route path="/" element={<ProductsView />} />
-            <Route path="/detail/:slug/" element={<ProductDetailView />} />
+            <Route path="/detail/:slug" element={<ProductDetailView />} />
             <Route path="/cart" element={<CartView />} />
             <Route path="/checkout/:order_oid" element={<CheckoutView />} />
             <Route
@@ -60,6 +61,7 @@ function App() {
             >
               <Route path="account" element={<Account />} />
               <Route path="orders" element={<Orders />} />
+              <Route path="orders/:order_oid" element={<OrderDetail />} />
             </Route>
             <Route />
           </Routes>

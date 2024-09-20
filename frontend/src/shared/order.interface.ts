@@ -23,6 +23,13 @@ export interface IOrder {
   total: number
   saved: string
   date: string
-  order_itens: IProduct[]
+  order_item: OrderItem[]
   vendor: IVendor
+}
+
+interface OrderItem extends IProduct {
+  qty: number
+  total: number
+  sub_total: number
+  product: IProduct
 }

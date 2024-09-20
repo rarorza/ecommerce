@@ -1,4 +1,6 @@
 import moment from 'moment'
+import { Link } from 'react-router-dom'
+
 import { useOutletDashBoard } from '../../views/customer/DashBoardOutlet'
 
 interface IStatusCounts {
@@ -150,12 +152,12 @@ function Orders() {
                       </span>
                     </td>
                     <td>
-                      <button
-                        type="button"
+                      <Link
+                        to={`${o.oid}`}
                         className="btn btn-link btn-sm btn-rounded"
                       >
                         View <i className="fas fa-eye" />
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))}
