@@ -21,6 +21,7 @@ import DashBoardView from './views/customer/DashBoardView'
 import Account from './components/customer/Account'
 import Orders from './components/customer/Orders'
 import OrderDetail from './components/customer/OrderDetail'
+import Wishlist from './components/customer/Wishlist'
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
               <Route path="account" element={<Account />} />
               <Route path="orders" element={<Orders />} />
               <Route path="orders/:order_oid" element={<OrderDetail />} />
+              <Route path="wishlist" element={<Wishlist />} />
             </Route>
             <Route />
           </Routes>

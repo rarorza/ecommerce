@@ -117,6 +117,35 @@ function Products() {
     }
   }
 
+  const handleWishlist = async (productId: number, userId: number | null) => {
+    if (userId) {
+      const formData = new FormData()
+      const data = JSON.stringify({
+        product_id: productId,
+        user_id: userId,
+      })
+      formData.append('data', data)
+
+      try {
+        const res = await apiInstance.post(
+          `customer/wishlist/${userId}/`,
+          formData,
+        )
+
+        Swal.fire({
+          icon: 'success',
+          title: res.data.message,
+        })
+      } catch (error) {
+        console.log(error)
+        Swal.fire({
+          icon: 'error',
+          title: 'Something when wrong',
+        })
+      }
+    }
+  }
+
   return (
     <>
       <main className="mt-5">
@@ -134,6 +163,7 @@ function Products() {
                   selectedSizes={selectedSizes}
                   selectedColors={selectedColors}
                   handleAddToCart={handleAddToCart}
+                  handleWishlist={handleWishlist}
                 />
               ))}
               <div className="row">

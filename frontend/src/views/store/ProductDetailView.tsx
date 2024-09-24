@@ -149,6 +149,37 @@ function ProductDetailView() {
     })
   }
 
+  const handleWishlist = async (productId: number) => {
+    const user_id = userData?.user_id
+
+    if (user_id) {
+      const formData = new FormData()
+      const data = JSON.stringify({
+        product_id: productId,
+        user_id: user_id,
+      })
+      formData.append('data', data)
+
+      try {
+        const res = await apiInstance.post(
+          `customer/wishlist/${user_id}/`,
+          formData,
+        )
+
+        Swal.fire({
+          icon: 'success',
+          title: res.data.message,
+        })
+      } catch (error) {
+        console.log(error)
+        Swal.fire({
+          icon: 'error',
+          title: 'Something when wrong',
+        })
+      }
+    }
+  }
+
   return (
     <>
       <main className="mb-4 mt-4">
@@ -346,11 +377,15 @@ function ProductDetailView() {
                       <i className="fas fa-cart-plus me-2" /> Add to cart
                     </button>
                     <button
-                      href="#!"
                       type="button"
                       className="btn btn-danger btn-floating"
                       data-mdb-toggle="tooltip"
                       title="Add to wishlist"
+                      onClick={
+                        product
+                          ? () => handleWishlist(product.id, userData?.user_Id)
+                          : () => 0
+                      }
                     >
                       <i className="fas fa-heart" />
                     </button>
