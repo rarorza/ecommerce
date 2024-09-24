@@ -13,8 +13,8 @@ from store.models import (Cart, CartOrder, CartOrderItem, Category, Coupon,
                           Notification, Product, Review, Tax, Wishlist)
 from store.serializers import (CartOrderSerializer, CartSerializer,
                                CategorySerializer, CouponSerializer,
-                               ProductSerializer, ReviewSerializer,
-                               WishlistSerializer)
+                               NotificationSerializer, ProductSerializer,
+                               ReviewSerializer, WishlistSerializer)
 from userauth.models import User
 from userauth.serializers import ProfileSerializer
 
@@ -80,3 +80,33 @@ class WishlistAPIView(generics.ListCreateAPIView):
         return Response(
             {"message": "Added to wishlist"}, status=status.HTTP_201_CREATED
         )
+
+
+class CustomerNotification(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        user_id = self.kwargs["user_id"]
+
+        user = User.objects.get(id=user_id)
+        notification = Notification.objects.filter(user=user)
+        return notification
+
+
+class MarkCustomerNotificationAsSeen(generics.RetrieveAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        user_id = self.kwargs["user_id"]
+        notification_id = self.kwargs["notification_id"]
+
+        user = User.objects.get(id=user_id)
+        notification = Notification.objects.get(id=notification_id, user=user)
+
+        if notification.seen != True:
+            notification.seen = True
+            notification.save()
+
+        return notification
