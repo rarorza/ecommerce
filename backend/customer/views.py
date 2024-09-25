@@ -9,12 +9,28 @@ from django.template.loader import render_to_string
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from store.models import (Cart, CartOrder, CartOrderItem, Category, Coupon,
-                          Notification, Product, Review, Tax, Wishlist)
-from store.serializers import (CartOrderSerializer, CartSerializer,
-                               CategorySerializer, CouponSerializer,
-                               NotificationSerializer, ProductSerializer,
-                               ReviewSerializer, WishlistSerializer)
+from store.models import (
+    Cart,
+    CartOrder,
+    CartOrderItem,
+    Category,
+    Coupon,
+    Notification,
+    Product,
+    Review,
+    Tax,
+    Wishlist,
+)
+from store.serializers import (
+    CartOrderSerializer,
+    CartSerializer,
+    CategorySerializer,
+    CouponSerializer,
+    NotificationSerializer,
+    ProductSerializer,
+    ReviewSerializer,
+    WishlistSerializer,
+)
 from userauth.models import User
 from userauth.serializers import ProfileSerializer
 
@@ -90,7 +106,7 @@ class CustomerNotification(generics.ListAPIView):
         user_id = self.kwargs["user_id"]
 
         user = User.objects.get(id=user_id)
-        notification = Notification.objects.filter(user=user)
+        notification = Notification.objects.filter(user=user).order_by("-pk")
         return notification
 
 
