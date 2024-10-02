@@ -23,7 +23,7 @@ import Orders from './components/customer/Orders'
 import OrderDetail from './components/customer/OrderDetail'
 import Wishlist from './components/customer/Wishlist'
 import Notifications from './components/customer/Notifications'
-import Settings from './components/customer/Settings'
+import AccountDetail from './components/customer/AccountDetail'
 
 function App() {
   return (
@@ -67,7 +67,7 @@ function App() {
               <Route path="orders/:order_oid" element={<OrderDetail />} />
               <Route path="wishlist" element={<Wishlist />} />
               <Route path="notifications" element={<Notifications />} />
-              <Route path="settings" element={<Settings />} />
+              <Route path="account/detail" element={<AccountDetail />} />
             </Route>
             <Route />
           </Routes>

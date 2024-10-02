@@ -77,7 +77,10 @@ function Header() {
                     </Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item" to={`/customer/settings/`}>
+                    <Link
+                      className="dropdown-item"
+                      to={`/customer/account/detail/`}
+                    >
                       <i className="fas fa-gear fa-spin"></i> Settings
                     </Link>
                   </li>
@@ -144,7 +147,10 @@ function Header() {
                     </Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item" to="/vendor/settings/">
+                    <Link
+                      className="dropdown-item"
+                      to="/vendor/account/detail/"
+                    >
                       {' '}
                       <i className="fas fa-gear fa-spin"></i> Settings
                     </Link>

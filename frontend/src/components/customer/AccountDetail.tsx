@@ -3,7 +3,7 @@ import { IProfile } from '../../shared/profile.interface'
 import apiInstance from '../../utils/axios'
 import GetUserData from '../../utils/plugins/GetUserData'
 
-function Settings() {
+function AccountDetail() {
   const userData = GetUserData()
   const [profile, setProfile] = useState<IProfile>()
   // const [profile, setProfile] = useState<IProfile | undefined>(undefined)
@@ -212,4 +212,4 @@ function Settings() {
   )
 }
 
-export default Settings
+export default AccountDetail

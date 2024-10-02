@@ -22,7 +22,7 @@ function SideBar({ profile }: Props) {
         <div className="text-center">
           <h3 className="mb-0">{profile.full_name}</h3>
           <p className="mt-0">
-            <Link to="/customer/settings/">
+            <Link to="/customer/account/detail/">
               <i className="fas fa-edit me-2"></i> Edit Account
             </Link>
           </p>
@@ -63,7 +63,10 @@ function SideBar({ profile }: Props) {
         </li>
         <li className="list-group-item d-flex justify-content-between align-items-start">
           <div className="ms-2 me-auto">
-            <Link to={'/customer/settings/'} className="fw-bold text-dark">
+            <Link
+              to={'/customer/account/detail/'}
+              className="fw-bold text-dark"
+            >
               <i className="fas fa-gear fa-spin me-2"></i> Setting
             </Link>
           </div>
