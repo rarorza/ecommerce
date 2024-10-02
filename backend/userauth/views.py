@@ -1,12 +1,17 @@
+import json
+
 import shortuuid
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from userauth.models import Profile, User
-from userauth.serializers import (MyTokenObtainPairSerializer,
-                                  ProfileSerializer, RegisterSerializer,
-                                  UserSerializer)
+from userauth.serializers import (
+    MyTokenObtainPairSerializer,
+    ProfileSerializer,
+    RegisterSerializer,
+    UserSerializer,
+)
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -71,7 +76,7 @@ class PasswordChangeView(generics.CreateAPIView):
             )
 
 
-class ProfileView(generics.RetrieveAPIView):
+class ProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [AllowAny]
 
