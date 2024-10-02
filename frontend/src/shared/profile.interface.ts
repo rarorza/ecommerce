@@ -1,7 +1,7 @@
 import { IUser } from './user.interface'
 
 export interface IProfile {
-  image?: string | any
+  image?: string | File
   full_name?: string
   about?: string
   gender?: string
