@@ -158,6 +158,12 @@ function Orders() {
                       >
                         View <i className="fas fa-eye" />
                       </Link>
+                      <Link
+                        to={`/customer/invoice/${o.oid}`}
+                        className="btn btn-link btn-sm btn-rounded"
+                      >
+                        View <i className="fas fa-eye" />
+                      </Link>
                     </td>
                   </tr>
                 ))}
