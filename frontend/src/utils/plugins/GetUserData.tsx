@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 import { jwtDecode } from 'jwt-decode'
-import { IUserDataJwt } from '../auth'
+import { IUserDataJwt } from '../../shared/user.interface'
 
 function GetUserData() {
   const access_token = Cookies.get('access_token')

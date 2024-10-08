@@ -99,9 +99,9 @@ function Header() {
                 </a>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
                   <li>
-                    <Link className="dropdown-item" to="/vendor/dashboard/">
+                    <Link className="dropdown-item" to="/vendor/resume/">
                       {' '}
-                      <i className="fas fa-user"></i> Dashboard
+                      <i className="bi bi-speedometer"></i> Resume
                     </Link>
                   </li>
                   <li>

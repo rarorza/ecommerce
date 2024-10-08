@@ -20,4 +20,5 @@ export interface IUser {
 export interface IUserDataJwt extends JwtPayload {
   user_id: number | null
   username: string | null
+  vendor_id?: number | null
 }

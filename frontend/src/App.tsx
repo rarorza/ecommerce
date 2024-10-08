@@ -18,6 +18,7 @@ import { CartProvider } from './context/CartContext'
 import PrivateRoute from './layout/PrivateRoute'
 import MainWrapper from './layout/MainWrapper'
 import DashBoardView from './views/customer/DashBoardView'
+import DashBoardVendorView from './views/vendor/DashBoardVendorView'
 import Account from './components/customer/Account'
 import Orders from './components/customer/Orders'
 import OrderDetail from './components/customer/OrderDetail'
@@ -25,6 +26,7 @@ import Wishlist from './components/customer/Wishlist'
 import Notifications from './components/customer/Notifications'
 import AccountDetail from './components/customer/AccountDetail'
 import Invoice from './components/customer/Invoice'
+import Resume from './components/vendor/Resume'
 
 function App() {
   return (
@@ -70,6 +72,18 @@ function App() {
               <Route path="notifications" element={<Notifications />} />
               <Route path="account/detail" element={<AccountDetail />} />
               <Route path="invoice/:order_oid" element={<Invoice />} />
+            </Route>
+
+            {/*Vendor Components*/}
+            <Route
+              path="/vendor/*"
+              element={
+                <PrivateRoute>
+                  <DashBoardVendorView />
+                </PrivateRoute>
+              }
+            >
+              <Route path="resume" element={<Resume />} />
             </Route>
             <Route />
           </Routes>

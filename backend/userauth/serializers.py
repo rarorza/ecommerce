@@ -45,7 +45,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["email"] = user.email
         token["username"] = user.username
         try:
-            token["vendor_id"] = user.vendor_id
+            token["vendor_id"] = user.vendor.id
         except:
             token["vendor_id"] = 0
         return token

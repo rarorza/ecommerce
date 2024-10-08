@@ -74,4 +74,4 @@ class ResumeStatsAPIView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        return Response(self.get_serializer(queryset, many=True).data)
+        return Response(self.get_serializer(queryset, many=True).data[0])

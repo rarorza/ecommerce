@@ -11,3 +11,9 @@ export interface IVendor {
   slug: string
   user: IUser
 }
+
+export interface IResumeStats {
+  products: number | null
+  orders: number | null
+  revenue: number | null
+}
