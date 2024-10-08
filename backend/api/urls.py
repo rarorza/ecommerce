@@ -60,4 +60,6 @@ urlpatterns = [
     ),
     # Vendor
     path("vendor/resume/<vendor_id>/", vendor_views.ResumeStatsAPIView.as_view()),
+    path("vendor/orders-chart/<vendor_id>/", vendor_views.MonthlyOrderChartAPIView),
+    path("vendor/products-chart/<vendor_id>/", vendor_views.MonthlyProductChartAPIView),
 ]

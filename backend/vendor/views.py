@@ -6,8 +6,10 @@ import stripe
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
+from django.db.models.functions import ExtractMonth
 from django.template.loader import render_to_string
 from rest_framework import generics, status
+from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from store.models import (
@@ -75,3 +77,29 @@ class ResumeStatsAPIView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         return Response(self.get_serializer(queryset, many=True).data[0])
+
+
+@api_view(("GET",))
+def MonthlyOrderChartAPIView(resquest, vendor_id):
+    vendor = Vendor.objects.get(id=vendor_id)
+    orders = CartOrder.objects.filter(vendor=vendor, payment_status="paid")
+    orders_by_month = (
+        orders.annotate(month=ExtractMonth("date"))
+        .values("month")
+        .annotate(orders=models.Count("id"))
+        .order_by("month")
+    )
+    return Response(orders_by_month)
+
+
+@api_view(("GET",))
+def MonthlyProductChartAPIView(resquest, vendor_id):
+    vendor = Vendor.objects.get(id=vendor_id)
+    products = Product.objects.filter(vendor=vendor)
+    products_by_month = (
+        products.annotate(month=ExtractMonth("date"))
+        .values("month")
+        .annotate(products=models.Count("id"))
+        .order_by("month")
+    )
+    return Response(products_by_month)
