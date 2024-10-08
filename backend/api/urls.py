@@ -3,6 +3,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from store import views as store_views
 from userauth import views as userauth_views
+from vendor import views as vendor_views
 
 urlpatterns = [
     # Authentification
@@ -57,4 +58,6 @@ urlpatterns = [
         "customer/notification/<user_id>/<notification_id>/",
         customer_views.MarkCustomerNotificationAsSeen.as_view(),
     ),
+    # Vendor
+    path("vendor/resume/<vendor_id>/", vendor_views.ResumeStatsAPIView.as_view()),
 ]

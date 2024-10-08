@@ -1,38 +1,15 @@
 import json
-from decimal import Decimal
 
-import requests
-import stripe
-from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from store.models import (
-    Cart,
-    CartOrder,
-    CartOrderItem,
-    Category,
-    Coupon,
-    Notification,
-    Product,
-    Review,
-    Tax,
-    Wishlist,
-)
+from store.models import CartOrder, Notification, Product, Wishlist
 from store.serializers import (
     CartOrderSerializer,
-    CartSerializer,
-    CategorySerializer,
-    CouponSerializer,
     NotificationSerializer,
-    ProductSerializer,
-    ReviewSerializer,
     WishlistSerializer,
 )
 from userauth.models import User
-from userauth.serializers import ProfileSerializer
 
 
 class OrdersAPIView(generics.ListAPIView):
