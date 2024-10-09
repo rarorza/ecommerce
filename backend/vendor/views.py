@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 import requests
@@ -31,6 +32,7 @@ from store.serializers import (
     CartSerializer,
     CategorySerializer,
     CouponSerializer,
+    EarningSerializer,
     NotificationSerializer,
     ProductSerializer,
     ReviewSerializer,
@@ -165,3 +167,109 @@ class RevenueAPIView(generics.ListAPIView):
             or 0
         )
         return revenue
+
+
+class FilterProductsAPIView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        vendor_id = self.kwargs["vendor_id"]
+        vendor = Vendor.objects.get(id=vendor_id)
+
+        filter = self.request.GET.get("filter")
+
+        if filter == "published":
+            products = Product.objects.filter(vendor=vendor, status="published")
+        elif filter == "in_review":
+            products = Product.objects.filter(vendor=vendor, status="in_review")
+        elif filter == "draft":
+            products = Product.objects.filter(vendor=vendor, status="draft")
+        elif filter == "disabled":
+            products = Product.objects.filter(vendor=vendor, status="disabled")
+        else:
+            products = Product.objects.filter(vendor=vendor)
+
+        return products
+
+
+class EarningAPIView(generics.ListAPIView):
+    serializer_class = EarningSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        vendor_id = self.kwargs["vendor_id"]
+        vendor = Vendor.objects.get(id=vendor_id)
+
+        one_month_ago = datetime.today() - timedelta(days=30)
+        monthly_revenue = (
+            CartOrderItem.objects.filter(
+                vendor=vendor,
+                order__payment_status="paid",
+                date__gte=one_month_ago,
+            ).aggregate(
+                total_revenue=models.Sum(
+                    models.F("sub_total") + models.F("shipping_amount")
+                )
+            )[
+                "total_revenue"
+            ]
+            or 0
+        )
+        total_revenue = (
+            CartOrderItem.objects.filter(
+                vendor=vendor,
+                order__payment_status="paid",
+            ).aggregate(
+                total_revenue=models.Sum(
+                    models.F("sub_total") + models.F("shipping_amount")
+                )
+            )[
+                "total_revenue"
+            ]
+            or 0
+        )
+        return [{"monthly_revenue": monthly_revenue, "total_revenue": total_revenue}]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        return Response(self.get_serializer(queryset, many=True).data[0])
+
+
+@api_view(("GET",))
+def MonthlyEarningTracker(request, vendor_id):
+    vendor = Vendor.objects.get(id=vendor_id)
+    monthly_earning_tracker = (
+        CartOrderItem.objects.filter(vendor=vendor, order__payment_status="paid")
+        .annotate(month=ExtractMonth("date"))
+        .values("month")
+        .annotate(
+            sales_count=models.Sum("qty"),
+            total_earning=models.F("sub_total") + models.F("shipping_amount"),
+        )
+    ).order_by("-month")
+    return Response(monthly_earning_tracker)
+
+
+class ReviewListAPIView(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        vendor_id = self.kwargs["vendor_id"]
+        vendor = Vendor.objects.get(id=vendor_id)
+        reviews = Review.objects.filter(product__vendor=vendor)
+        return reviews
+
+
+class ReviewDetailAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        vendor_id = self.kwargs["vendor_id"]
+        review_id = self.kwargs["review_id"]
+
+        vendor = Vendor.objects.get(id=vendor_id)
+        review = Review.objects.get(id=review_id, product__vendor=vendor)
+        return review
