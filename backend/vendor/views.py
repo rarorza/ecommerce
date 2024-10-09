@@ -32,6 +32,7 @@ from store.serializers import (
     CartSerializer,
     CategorySerializer,
     CouponSerializer,
+    CouponSummarySerializer,
     EarningSerializer,
     NotificationSerializer,
     ProductSerializer,
@@ -273,3 +274,70 @@ class ReviewDetailAPIView(generics.RetrieveUpdateAPIView):
         vendor = Vendor.objects.get(id=vendor_id)
         review = Review.objects.get(id=review_id, product__vendor=vendor)
         return review
+
+
+class CouponsListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = CouponSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        vendor_id = self.kwargs["vendor_id"]
+        vendor = Vendor.objects.get(id=vendor_id)
+        coupons = Coupon.objects.filter(vendor=vendor)
+        return coupons
+
+    def create(self, request, *args, **kwargs):
+        payload = request.data
+
+        vendor_id = payload["vendor_id"]
+        code = payload["code"]
+        discount = payload["discount"]
+        active = payload["active"]
+
+        vendor = Vendor.objects.get(id=vendor_id)
+
+        Coupon.objects.create(
+            vendor=vendor,
+            code=code,
+            discount=discount,
+            active=(active.lower() == "true"),
+        )
+        return Response(
+            {"message": "Coupon created successfully"}, status=status.HTTP_201_CREATED
+        )
+
+
+class CouponDetailAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = CouponSerializer
+    permission_classes = [AllowAny]
+
+    def get_object(self):
+        vendor_id = self.kwargs["vendor_id"]
+        coupon_id = self.kwargs["coupon_id"]
+
+        vendor = Vendor.objects.get(id=vendor_id)
+        coupon = Coupon.objects.get(vendor=vendor, id=coupon_id)
+        return coupon
+
+
+class CouponStatsAPIView(generics.ListAPIView):
+    serializer_class = CouponSummarySerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        vendor_id = self.kwargs["vendor_id"]
+        vendor = Vendor.objects.get(id=vendor_id)
+
+        total_coupons = Coupon.objects.filter(vendor=vendor).count()
+        active_coupons = Coupon.objects.filter(vendor=vendor, active=True).count()
+
+        return [
+            {
+                "total_coupons": total_coupons,
+                "active_coupons": active_coupons,
+            }
+        ]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        return Response(self.get_serializer(queryset, many=True).data[0])
