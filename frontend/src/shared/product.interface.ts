@@ -30,3 +30,8 @@ export interface IProduct {
   slug: string
   date: string
 }
+
+export interface ProductsChart {
+  month: number
+  products: number
+}

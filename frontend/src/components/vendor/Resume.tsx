@@ -1,11 +1,67 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { Bar } from 'react-chartjs-2'
+import { Chart } from 'chart.js'
+import { CategoryScale } from 'chart.js/auto'
+
 import { useOutletDashBoardVendor } from '../../views/vendor/DashBoardVendorOutlet'
+import apiInstance from '../../utils/axios'
+import GetUserData from '../../utils/plugins/GetUserData'
+import { OrderChart } from '../../shared/order.interface'
+import { ProductsChart } from '../../shared/product.interface'
 
 function Resume() {
   const { resumeStats } = useOutletDashBoardVendor()
+  const userData = GetUserData()
+  const [ordersChartData, setOrdersChartData] = useState<OrderChart[]>()
+  const [productsChartData, setProductsChartData] = useState<ProductsChart[]>()
+
+  Chart.register(CategoryScale)
+  const getChartData = async () => {
+    const orders_res = await apiInstance.get(
+      `vendor/orders-chart/${userData?.vendor_id}/`,
+    )
+    setOrdersChartData(orders_res.data)
+
+    const products_res = await apiInstance.get(
+      `vendor/products-chart/${userData?.vendor_id}/`,
+    )
+    setProductsChartData(products_res.data)
+  }
+
+  const orders_months = ordersChartData?.map((item) => item.month)
+  const orders_counts = ordersChartData?.map((item) => item.orders)
+
+  const products_months = productsChartData?.map((item) => item.month)
+  const products_counts = productsChartData?.map((item) => item.products)
+
+  const orders_data = {
+    labels: orders_months,
+    datasets: [
+      {
+        label: 'Total Orders',
+        data: orders_counts,
+        fill: true,
+        backgroundColor: 'green',
+        borderColor: 'green',
+      },
+    ],
+  }
+
+  const products_data = {
+    labels: products_months,
+    datasets: [
+      {
+        label: 'Total Products',
+        data: products_counts,
+        fill: true,
+        backgroundColor: 'blue',
+        borderColor: 'blue',
+      },
+    ],
+  }
 
   useEffect(() => {
-    console.log(resumeStats)
+    getChartData()
   }, [])
   return (
     <div className="col-md-9 col-lg-10 main mt-4">
@@ -64,10 +120,17 @@ function Resume() {
           </div>
         </div>
         <div className="row my-2">
-          <div className="col-md-12 py-1">
+          <div className="col-lg-6 py-1">
             <div className="card">
               <div className="card-body">
-                <canvas id="line-chart" />
+                <Bar data={orders_data} style={{ height: 300 }} />
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-6 py-1">
+            <div className="card">
+              <div className="card-body">
+                <Bar data={products_data} style={{ height: 300 }} />
               </div>
             </div>
           </div>

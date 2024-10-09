@@ -33,3 +33,8 @@ interface OrderItem extends IProduct {
   sub_total: number
   product: IProduct
 }
+
+export interface OrderChart {
+  month: number
+  orders: number
+}
