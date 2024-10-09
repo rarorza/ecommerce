@@ -62,4 +62,11 @@ urlpatterns = [
     path("vendor/resume/<vendor_id>/", vendor_views.ResumeStatsAPIView.as_view()),
     path("vendor/orders-chart/<vendor_id>/", vendor_views.MonthlyOrderChartAPIView),
     path("vendor/products-chart/<vendor_id>/", vendor_views.MonthlyProductChartAPIView),
+    path("vendor/products/<vendor_id>/", vendor_views.ProductsAPIView.as_view()),
+    path("vendor/orders/<vendor_id>/", vendor_views.OrdersAPIView.as_view()),
+    path(
+        "vendor/orders/<vendor_id>/<orders_oid>/",
+        vendor_views.OrderDetailAPIView.as_view(),
+    ),
+    path("vendor/revenue/<vendor_id>/", vendor_views.RevenueAPIView.as_view()),
 ]
