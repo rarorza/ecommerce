@@ -1,20 +1,7 @@
 from rest_framework import serializers
-from store.models import (
-    Cart,
-    CartOrder,
-    CartOrderItem,
-    Category,
-    Color,
-    Coupon,
-    Gallery,
-    Notification,
-    Product,
-    ProductFaq,
-    Review,
-    Size,
-    Specification,
-    Wishlist,
-)
+from store.models import (Cart, CartOrder, CartOrderItem, Category, Color,
+                          Coupon, Gallery, Notification, Product, ProductFaq,
+                          Review, Size, Specification, Wishlist)
 from userauth.serializers import ProfileSerializer
 from vendor.models import Vendor
 
@@ -254,3 +241,9 @@ class EarningSerializer(serializers.Serializer):
 class CouponSummarySerializer(serializers.Serializer):
     total_coupons = serializers.IntegerField()
     active_coupons = serializers.IntegerField()
+
+
+class NotificationsSummarySerializer(serializers.Serializer):
+    read_notifications = serializers.IntegerField()
+    unread_notifications = serializers.IntegerField()
+    all_notifications = serializers.IntegerField()

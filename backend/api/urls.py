@@ -92,4 +92,20 @@ urlpatterns = [
         "vendor/coupon-stats/<vendor_id>/",
         vendor_views.CouponStatsAPIView.as_view(),
     ),
+    path(
+        "vendor/notifications-seen/<vendor_id>/",
+        vendor_views.NotificationsSeenAPIView.as_view(),
+    ),
+    path(
+        "vendor/notifications-unseeen/<vendor_id>/",
+        vendor_views.NotificationsUnseenAPIView.as_view(),
+    ),
+    path(
+        "vendor/notification-mark-as-seen/<vendor_id>/<notification_id>/",
+        vendor_views.NotificationMarkAsSeen.as_view(),
+    ),
+    path(
+        "vendor/notifications-summary/<vendor_id>/",
+        vendor_views.NotificationSummaryAPIView.as_view(),
+    ),
 ]
