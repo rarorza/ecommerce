@@ -108,4 +108,20 @@ urlpatterns = [
         "vendor/notifications-summary/<vendor_id>/",
         vendor_views.NotificationSummaryAPIView.as_view(),
     ),
+    path(
+        "vendor/profile-update/<int:pk>/",
+        vendor_views.VendorProfileUpdateAPIView.as_view(),
+    ),
+    path(
+        "vendor/shop/<vendor_slug>/",
+        vendor_views.ShopAPIView.as_view(),
+    ),
+    path(
+        "vendor/shop-update/<int:pk>/",
+        vendor_views.ShopUpdateAPIView.as_view(),
+    ),
+    path(
+        "vendor/shop-products/<vendor_slug>/",
+        vendor_views.ShopProductsAPIView.as_view(),
+    ),
 ]
