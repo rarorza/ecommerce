@@ -29,6 +29,7 @@ export interface IProduct {
   size: ISizes[]
   slug: string
   date: string
+  orders: number
 }
 
 export interface ProductsChart {

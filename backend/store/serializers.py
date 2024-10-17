@@ -1,7 +1,20 @@
 from rest_framework import serializers
-from store.models import (Cart, CartOrder, CartOrderItem, Category, Color,
-                          Coupon, Gallery, Notification, Product, ProductFaq,
-                          Review, Size, Specification, Wishlist)
+from store.models import (
+    Cart,
+    CartOrder,
+    CartOrderItem,
+    Category,
+    Color,
+    Coupon,
+    Gallery,
+    Notification,
+    Product,
+    ProductFaq,
+    Review,
+    Size,
+    Specification,
+    Wishlist,
+)
 from userauth.serializers import ProfileSerializer
 from vendor.models import Vendor
 
@@ -69,6 +82,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "size",
             "slug",
             "date",
+            "orders",
         ]
 
     def __init__(self, *args, **kwargs):

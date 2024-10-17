@@ -6,9 +6,11 @@ import GetUserData from '../../utils/plugins/GetUserData'
 import { IResumeStats } from '../../shared/vendor.interface'
 // Outlet Typing
 import { ContextType } from './DashBoardVendorOutlet'
+import { IProduct } from '../../shared/product.interface'
 
 function DashBoardVendorView() {
   const [resumeStats, setResumeStats] = useState<IResumeStats>()
+  const [products, setProducts] = useState<IProduct[]>()
   const userData = GetUserData()
 
   const getVendorResumeStats = async () => {
@@ -22,8 +24,22 @@ function DashBoardVendorView() {
     }
   }
 
+  const getProducts = async () => {
+    if (userData?.vendor_id) {
+      try {
+        const res = await apiInstance.get(
+          `vendor/products/${userData.vendor_id}`,
+        )
+        setProducts(res.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+
   useEffect(() => {
     getVendorResumeStats()
+    getProducts()
   }, [])
 
   return (
@@ -31,8 +47,8 @@ function DashBoardVendorView() {
       <div className="container-fluid" id="main">
         <div className="row row-offcanvas row-offcanvas-left h-100">
           <SideBar />
-          {resumeStats ? (
-            <Outlet context={{ resumeStats } satisfies ContextType} />
+          {resumeStats && products ? (
+            <Outlet context={{ resumeStats, products } satisfies ContextType} />
           ) : (
             ''
           )}

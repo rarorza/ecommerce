@@ -8,9 +8,10 @@ import apiInstance from '../../utils/axios'
 import GetUserData from '../../utils/plugins/GetUserData'
 import { OrderChart } from '../../shared/order.interface'
 import { ProductsChart } from '../../shared/product.interface'
+import { Link } from 'react-router-dom'
 
 function Resume() {
-  const { resumeStats } = useOutletDashBoardVendor()
+  const { resumeStats, products } = useOutletDashBoardVendor()
   const userData = GetUserData()
   const [ordersChartData, setOrdersChartData] = useState<OrderChart[]>()
   const [productsChartData, setProductsChartData] = useState<ProductsChart[]>()
@@ -134,13 +135,6 @@ function Resume() {
               </div>
             </div>
           </div>
-          {/* <div class="col-md-6 py-1">
-        <div class="card">
-            <div class="card-body">
-                <canvas id="pie-chart"></canvas>
-            </div>
-        </div>
-    </div> */}
         </div>
       </div>
       <a id="layouts" />
@@ -178,7 +172,7 @@ function Resume() {
               <table className="table">
                 <thead className="table-dark">
                   <tr>
-                    <th scope="col">#ID</th>
+                    <th scope="col">Image</th>
                     <th scope="col">Name</th>
                     <th scope="col">Price</th>
                     <th scope="col">Quantity</th>
@@ -188,63 +182,38 @@ function Resume() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <th scope="row">#erituo</th>
-                    <td>Turtle Neck Shirt</td>
-                    <td>$20</td>
-                    <td>14</td>
-                    <td>26</td>
-                    <td>Live</td>
-                    <td>
-                      <a href="" className="btn btn-primary mb-1">
-                        <i className="fas fa-eye" />
-                      </a>
-                      <a href="" className="btn btn-success mb-1">
-                        <i className="fas fa-edit" />
-                      </a>
-                      <a href="" className="btn btn-danger mb-1">
-                        <i className="fas fa-trash" />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">#erituo</th>
-                    <td>Turtle Neck Shirt</td>
-                    <td>$20</td>
-                    <td>14</td>
-                    <td>26</td>
-                    <td>Live</td>
-                    <td>
-                      <a href="" className="btn btn-primary mb-1">
-                        <i className="fas fa-eye" />
-                      </a>
-                      <a href="" className="btn btn-success mb-1">
-                        <i className="fas fa-edit" />
-                      </a>
-                      <a href="" className="btn btn-danger mb-1">
-                        <i className="fas fa-trash" />
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">#erituo</th>
-                    <td>Turtle Neck Shirt</td>
-                    <td>$20</td>
-                    <td>14</td>
-                    <td>26</td>
-                    <td>Live</td>
-                    <td>
-                      <a href="" className="btn btn-primary mb-1">
-                        <i className="fas fa-eye" />
-                      </a>
-                      <a href="" className="btn btn-success mb-1">
-                        <i className="fas fa-edit" />
-                      </a>
-                      <a href="" className="btn btn-danger mb-1">
-                        <i className="fas fa-trash" />
-                      </a>
-                    </td>
-                  </tr>
+                  {products.map((product, index) => (
+                    <tr key={index}>
+                      <th scope="row">
+                        <img
+                          src={product.image}
+                          alt="Product Image"
+                          style={{
+                            width: '100px',
+                            height: '70px',
+                            objectFit: 'cover',
+                            borderRadius: '10px',
+                          }}
+                        />
+                      </th>
+                      <td>{product.title}</td>
+                      <td>${product.price}</td>
+                      <td>{product.stock_qty}</td>
+                      <td>{product.orders}</td>
+                      <td>{product.status.toUpperCase()}</td>
+                      <td>
+                        <Link to="" className="btn btn-primary mb-1 me-2">
+                          <i className="fas fa-eye" />
+                        </Link>
+                        <Link to="" className="btn btn-success mb-1 me-2">
+                          <i className="fas fa-edit" />
+                        </Link>
+                        <Link to="" className="btn btn-danger mb-1">
+                          <i className="fas fa-trash" />
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
